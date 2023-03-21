@@ -12,4 +12,4 @@ Otro ejemplo:
 <br> sprintf(buffer2,"%s02", sizeof(buffer));
 <br> write(socketD, buffer, sizeof(buffer) = 2); //2 es protocol
 
-Continua en el cuaderno lab02 :(
+Continua en el cuaderno lab02 Tarea :(
