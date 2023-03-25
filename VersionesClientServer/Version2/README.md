@@ -1,1 +1,1 @@
-aaaa
+Usando threads para el read.
