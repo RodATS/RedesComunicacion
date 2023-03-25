@@ -1,7 +1,8 @@
+<h1>Tarea</h1>
 Protocolos de LogIn, LogOut, Msg, Msg_all, Keep_alive <br>
 Revisar en el cuaderno.<br>
 
-Review com funciona el write and read: Codigo:
+<h3>Review com funciona el write and read: Codigo:</h3>
 Cliente: <br>
 char buffer[1000]
  <br> Write(socketDescriptor,buffer, longitud del mensaje)//
