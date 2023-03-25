@@ -1,3 +1,6 @@
+Protocolos de LogIn, LogOut, Msg, Msg_all, Keep_alive <br>
+Revisar en el cuaderno.<br>
+
 Review com funciona el write and read: Codigo:
 Cliente: <br>
 char buffer[1000]
