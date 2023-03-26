@@ -1,5 +1,5 @@
 <h1>Tarea</h1>
-Protocolos de LogIn, LogOut, Msg, Msg_all, Keep_alive <br>
+Protocolos de LogIn (L), LogOut (O), Msg (M) , Msg_all (A), Keep_alive (K) <br>
 Revisar en el cuaderno.<br>
 
 <h3>Review com funciona el write and read: Codigo:</h3>
