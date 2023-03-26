@@ -17,3 +17,15 @@ Otro ejemplo:
 <br> write(socketD, buffer, sizeof(buffer) = 2); //2 es protocol
 
 Continua en el cuaderno lab02 Tarea :(
+
+
+<h5>Lo del KeepAlive</h5>
+#include <chrono> <br>
+#include <ctime> <br>
+
+    auto end = std::chrono::system_clock::now(); <br>
+ 
+    std::chrono::duration<double> elapsed_seconds = end-start; <br>
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end); <br>
+ 
+    std::cout << "finished computation at " << std::ctime(&end_time) <br>
