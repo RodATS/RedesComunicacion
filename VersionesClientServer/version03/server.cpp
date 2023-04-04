@@ -8,12 +8,42 @@
   #include <unistd.h>
   #include <iostream>
   #include <string>
+   #include <thread>         // std::thread, std::this_thread::sleep_for
+  #include <chrono>         // std::chrono::seconds
   
   using namespace std;
  
-
-int nn;
-nn=read(ConectFD, buff,1);
+ void thread_read(int SocketFD) 
+{
+    char buffer[256];
+    string mensajeStringClient;
+    //loop
+    /*do{
+      read(socketC,buffer, 100);
+      cout<<buffer;
+    }
+    while(strcmp(buffer,"bye") != 0);*/
+     do{
+     		read(SocketFD,buffer,1); //bytes leidos
+     		//F0004hola0003lee
+     		/*if (buffer[0]== F)
+     			read(SocketFD,buffer,4);
+     		buffer[0] /0*/
+     			
+     			
+	    bzero(buffer,256);
+	     read(SocketFD,buffer,255); //bytes leidos
+	     printf("Client: [%s]\n",buffer);
+	     int indice=0;
+		     mensajeStringClient = "";
+		     while(buffer[indice] != '\0'){
+		     	mensajeStringClient += buffer[indice];
+		     	indice++;
+		}
+	}
+	
+	while(mensajeStringClient != "bye");
+}
 
 
   int main(void)
@@ -62,22 +92,10 @@ nn=read(ConectFD, buff,1);
         exit(EXIT_FAILURE);
       }
       
- 
+ 	thread (thread_read,SocketFD).detach();
+ 	
  do
      {
-	     bzero(buffer,256);
-	     n = read(SocketClient,buffer,255); //bytes leidos
-	     if (n < 0) perror("ERROR reading from socket");
-	     printf("Here is the message: [%s]\n",buffer);
-	     
-	     int indice=0;
-	     mensajeStringClient = "";
-	     while(buffer[indice] != '\0'){
-	     	mensajeStringClient += buffer[indice];
-	     	indice++;
-	     }
-	      //scanf or cin
-	      
 	     getline(cin,mensajeStringServer);
 	     int tamMensaje = mensajeStringServer.length();
 	     //char mensajeChar* = const_cast<char *>(mensajeString.str());
