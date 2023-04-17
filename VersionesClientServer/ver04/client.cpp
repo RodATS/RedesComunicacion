@@ -77,10 +77,10 @@ int main()
         char msg[10000];
         
 	cout<<"Log Out (O) - Message (N) - List (I): ";
-	char type;
-	//fgets(type, 10000, stdin);
-	cin>>type;
-	switch (type){
+	char type[1];
+	fgets(type, 10000, stdin);
+	//cin>>type;
+	switch (type[0]){
 		case 'N':{
 			cout << "Send to:";
 			fgets(receiver, 10000, stdin);
@@ -98,6 +98,7 @@ int main()
 			string temp = "N" +  string(size_m) + string(msg) + string(userBuffSize) + string(receiver);
 			//cout<<temp<<endl;
 			write(SocketFD, temp.c_str(), temp.size()+1);
+			break;
         	}
         	
         	case 'O':{
@@ -114,6 +115,7 @@ int main()
         		string temp = "I";
 			//cout<<temp<<endl;
 			write(SocketFD, temp.c_str(), temp.size()+1);
+			break;
         	}
         	
         }
@@ -156,6 +158,20 @@ void thread_read(int socketC)
 
             cout << endl << buffer << ": " << msg << endl;
         }
+        
+        if (buffer[0] == 'I'){
+            n = read(socketC, buffer, 4);
+            buffer[4] = '\0';
+            
+	    int size_m = atoi(buffer);
+            n = read(socketC, buffer, size_m);
+            buffer[size_m] = '\0';
+
+            char *msg = (char*)malloc(sizeof(char) * size_m);
+            sprintf(msg, "%s", buffer);
+            cout<<"Usuario: " << msg << endl;
+        }
+        
     } while(strcmp(buffer,"bye") != 0 );
 
 }
