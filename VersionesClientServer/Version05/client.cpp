@@ -76,7 +76,7 @@ int main()
         char size_m[5];
         char msg[10000];
         
-	cout<<"Log Out (O) - Message (N) - List (I): ";
+	cout<<"Log Out (O) - Message (N) - List (I) - Invitacion Tic Tac Toe (P) - Entrar al juego (X): ";
 	char type[1];
 	fgets(type, 10000, stdin);
 	//cin>>type;
@@ -138,6 +138,10 @@ int main()
 			write(SocketFD, temp.c_str(), temp.size()+1);
 			break;
         	}
+			
+		case 'X':{
+			
+		}
         	
         }
     }
