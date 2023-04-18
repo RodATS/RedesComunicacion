@@ -175,7 +175,7 @@ void thread_read(int socketC)
 			int szuser2 = strlen(user2);
 			sprintf(cszuser2, "%04d", szuser2);
 
-			cout << "Message from " << sockets[socketC] << " to " << cli << ": " << msg << endl;
+			cout << "Invitacion from " << sockets[socketC] << " to " << cli << ": " << msg << endl;
 
 			write(rec, "N", strlen("N"));
 			//tamaño del mensaje
@@ -187,7 +187,7 @@ void thread_read(int socketC)
 			//nombre usuario
 			write(rec, user2, strlen(user2));
 
-			cout << "Message sent." << endl;
+			cout << "Invitacion al juego sent." << endl;
 			break;
                 }
         
