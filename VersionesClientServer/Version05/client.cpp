@@ -192,6 +192,29 @@ void thread_read(int socketC)
             sprintf(msg, "%s", buffer);
             cout<<"Usuario: " << msg << endl;
         }
+	    
+	
+        if (buffer[0] == 'P') {
+            n = read(socketC, buffer, 4);
+            buffer[4] = '\0';
+
+            int size_m = atoi(buffer);
+            n = read(socketC, buffer, size_m);
+            buffer[size_m] = '\0';
+
+            char *msg = (char*)malloc(sizeof(char) * size_m);
+            sprintf(msg, "%s", buffer);
+            
+
+            n = read(socketC, buffer, 4);
+            buffer[4] = '\0';
+
+            int userBuffSize = atoi(buffer);
+            n = read(socketC, buffer, userBuffSize);
+            buffer[userBuffSize] = '\0';
+
+            cout << endl << buffer << ": " << msg << endl;
+        }
         
     } while(strcmp(buffer,"bye") != 0 );
 
