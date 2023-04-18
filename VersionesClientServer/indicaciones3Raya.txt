@@ -1,0 +1,25 @@
+Hacer un gameboard (en el server)
+_|_|_
+_|_|_
+_|_|_
+
+Hacer un print, using a  matriz
+Invitar al cliente a jugar (Y/N)
+- Opcion de aceptar o rechazar.
+Protocolo P: El jugador invita a otro a jugar:
+P / Size / Nickname
+
+Protocolo Y: Aceptar o Rechazar:
+N or Y / Size / Nickname
+
+- Server select quien comienza, e indicarle al jugador. (jugador 1: X, jugador 2: O, inicia jugador 1)
+- print la matriz con el gameboard, y las coordenadas para hacer su jugada.
+_1_|_2_|_3_
+_4_|_5_|_6_
+_7_|_8_|_9_
+
+- Size mensaje (posicion): 5 (para la lectura por el server). Jugador 1 -> Server
+ M / 5 / Size / Nickname (jugador 2)
+ 
+Server -> Jugador 2
+ M / 5 / Size / Nickname (jugador 1)
