@@ -137,6 +137,59 @@ void thread_read(int socketC)
                 	break;
                 }
                 
+	       //Vamo a jugar?
+ 		case 'P':{ //Falta a modificar
+                	//Tamaño del mensaje que se recibio
+			n = read(socketC, buffer, 4);
+			buffer[4] = '\0';
+
+			//se lee el mensaje
+			int size_m = atoi(buffer);
+			char csize_m[10000];
+			sprintf(csize_m, "%04d", size_m);
+			n = read(socketC, buffer, size_m);
+			buffer[size_m] = '\0';
+
+			char *msg = (char*)malloc(sizeof(char) * size_m);
+			sprintf(msg, "%s", buffer);
+
+
+			//tamaño del nombre del usuario
+			n = read(socketC, buffer, 4);
+			buffer[4] = '\0';
+
+			//nombre del usuario
+			int userBuffSize = atoi(buffer);
+			n = read(socketC, buffer, userBuffSize);
+			buffer[userBuffSize] = '\0';
+
+			char *cli = (char*)malloc(sizeof(char) * userBuffSize);
+			sprintf(cli, "%s", buffer);
+
+			//el socket del cliente a quien se le mandara el mensaje
+			int rec = users[buffer];
+
+			char user2[10000];
+			sprintf(user2, "%s", sockets[socketC].c_str());
+			char cszuser2[5];
+			int szuser2 = strlen(user2);
+			sprintf(cszuser2, "%04d", szuser2);
+
+			cout << "Message from " << sockets[socketC] << " to " << cli << ": " << msg << endl;
+
+			write(rec, "N", strlen("N"));
+			//tamaño del mensaje
+			write(rec, csize_m, strlen(csize_m));
+			//mensaje
+			write(rec, msg, strlen(msg));
+			//tamaño del nombre del usuario que mando el mensaje
+			write(rec, cszuser2, strlen(cszuser2));
+			//nombre usuario
+			write(rec, user2, strlen(user2));
+
+			cout << "Message sent." << endl;
+			break;
+                }
         
                 
                 
