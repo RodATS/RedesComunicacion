@@ -12,7 +12,7 @@ P / Size / Nickname
 Protocolo Y: Aceptar o Rechazar:
 N or Y / Size / Nickname
 
-- Server select quien comienza, e indicarle al jugador. (jugador 1: X, jugador 2: O, inicia jugador 1)
+- Server select quien comienza, e indicarle al jugador. (jugador 1: O, jugador 2: X, inicia jugador 1)
 - print la matriz con el gameboard, y las coordenadas para hacer su jugada.
 _1_|_2_|_3_
 _4_|_5_|_6_
