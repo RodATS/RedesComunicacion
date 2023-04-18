@@ -215,6 +215,47 @@ void thread_read(int socketC)
 
             cout << endl << buffer << ": " << msg << endl;
         }
+	
+	//Tic Tac Toe--------------------------
+    	if (buffer[0] == 'Y'){
+		int n_Game;
+    		char buffer_Game[10000];
+		do{
+			if (buffer[0] == 'W') {
+			    n = read(socketC, buffer, 4);
+			    buffer[4] = '\0';
+
+			    int size_m = atoi(buffer);
+			    n = read(socketC, buffer, size_m);
+			    buffer[size_m] = '\0';
+
+			    char *msg = (char*)malloc(sizeof(char) * size_m);
+			    sprintf(msg, "%s", buffer);
+
+
+			    n = read(socketC, buffer, 4);
+			    buffer[4] = '\0';
+
+			    int userBuffSize = atoi(buffer);
+			    n = read(socketC, buffer, userBuffSize);
+			    buffer[userBuffSize] = '\0';
+
+			    cout << endl << buffer << ": Coloco su ficha en la pos: " << msg << endl;
+			}
+		} while(strcmp(buffer,"Win") != 0 || strcmp(buffer,"Lose") != 0)
+	}
+	
+	// Rechazar el juego
+        if (buffer[0] == 'N'){
+	    n = read(socketC, buffer, 4);
+            buffer[4] = '\0';
+
+            int userBuffSize = atoi(buffer);
+            n = read(socketC, buffer, userBuffSize);
+            buffer[userBuffSize] = '\0';
+		
+	    cout<<buffer<< " No quiere jugar"<<endl;
+	}
         
     } while(strcmp(buffer,"bye") != 0 );
 
