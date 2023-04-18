@@ -117,6 +117,27 @@ int main()
 			write(SocketFD, temp.c_str(), temp.size()+1);
 			break;
         	}
+			
+		case 'P':{
+			cout << "Send to:";
+			fgets(receiver, 10000, stdin);
+			receiver[strlen(receiver) - 1] = '\0';
+			
+			string pregJugar = "Jugamos TicTacToe:";
+			for( int i =0; i < pregJugar.length(); i++){
+				msg[i] = pregJugar[i];
+			}
+			
+			msg[strlen(msg) - 1] = '\0';
+			sprintf(size_m, "%04d", ((int)strlen(msg)));
+			sprintf(userBuffSize, "%04d", ((int)strlen(receiver)));
+			msg = 
+
+			string temp = "P" +  string(size_m) + string(msg) + string(userBuffSize) + string(receiver);
+			//cout<<temp<<endl;
+			write(SocketFD, temp.c_str(), temp.size()+1);
+			break;
+        	}
         	
         }
     }
