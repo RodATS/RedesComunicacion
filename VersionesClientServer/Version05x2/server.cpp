@@ -228,7 +228,7 @@ void thread_read(int socketC)
                 }
                 
                 
-                case 'XX':{
+                case 'X':{
                 	//tamaño del nombre del usuario
 			n = read(socketC, buffer, 4);
 			buffer[4] = '\0';
@@ -250,7 +250,7 @@ void thread_read(int socketC)
 			int szuser2 = strlen(user2);
 			sprintf(cszuser2, "%04d", szuser2);
 
-			cout << "User " << sockets[socketC] << " accept game with " << cli << endl;
+			cout << "User " << sockets[socketC] << " reject game with " << cli << endl;
 
 			write(rec, "X", strlen("X"));
 			//tamaño del nombre del usuario que mando el mensaje
@@ -258,7 +258,7 @@ void thread_read(int socketC)
 			//nombre usuario
 			write(rec, user2, strlen(user2));
 
-			cout << "Game Accepted" << endl;
+			cout << "Game Rejected" << endl;
                 	break;
                 }
         
