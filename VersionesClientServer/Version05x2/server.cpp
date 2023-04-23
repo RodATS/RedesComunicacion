@@ -19,6 +19,25 @@ _4_|_5_|_6_
 _7_|_8_|_9_
 */
 
+int Tablero = [[0,0,0],[0,0,0],[0,0,0]];
+
+void ReiniciarTablero(){
+	for(int i =0; i < 3; i++){
+		for(int j =0;j<3; j++){
+			Tablero[i][j]=0;
+		}
+	}
+}
+
+//Jugador1 = 1,  Jugador2 = 2
+int VerficarGanador(){
+	int ganador = 0; //0: indica que aún no hay ganador
+	//gana jugador 1
+	if ( Tablero[0][0] == 1 && Tablero[0][1] == 1 && Tablero[0][2] == 1 ){
+		
+	}
+	
+}
 
 
 
@@ -224,6 +243,11 @@ void thread_read(int socketC)
 			write(rec, user2, strlen(user2));
 
 			cout << "Game Accepted" << endl;
+			
+			//Se agregan los jugadores al map:  map<string,int> jugadores;
+                	jugadores.insert({sockets[socketC], socketC});
+			jugadores.insert({cli,rec});
+			
                 	break;
                 }
                 
@@ -261,6 +285,8 @@ void thread_read(int socketC)
 			cout << "Game Rejected" << endl;
                 	break;
                 }
+			    
+		
         
                 
                 
