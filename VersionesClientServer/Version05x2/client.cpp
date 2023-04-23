@@ -224,7 +224,7 @@ void thread_read(int socketC)
             cout<<"Usuario: " << msg << endl;
         }
 	    
-	
+	//Pregunta Invitacion del juego---
         if (buffer[0] == 'P') {
             n = read(socketC, buffer, 4);
             buffer[4] = '\0';
@@ -263,6 +263,7 @@ void thread_read(int socketC)
 		menu = menuInicialModoJuego;
 	}
 	
+	    //----Movimiento en le tablero
 	if (buffer[0] == 'W') {
 			    n = read(socketC, buffer, 4);
 			    buffer[4] = '\0';
