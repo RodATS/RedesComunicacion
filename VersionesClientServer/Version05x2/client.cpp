@@ -71,13 +71,13 @@ int main()
     write(SocketFD, test.c_str(), test.size()+1);
 
 	//
-	string menuInicial = "Log Out (O) - Message (N) - List (I) - Invitacion Tic Tac Toe (P): ";
+	//string menuInicial = "Log Out (O) - Message (N) - List (I) - Invitacion Tic Tac Toe (P): ";
 	
-	string menuInicialModoRespuesta = "Log Out (O) - Message (N) - List (I) - Aceptar o Rechazar el juego (Y/X): ";
+	string menuInicial = "Log Out (O) - Message (N) - List (I) - Invitacion Tic Tac Toe (P) - Aceptar o Rechazar el juego (Y/X) - Movimiento juego (W): ";
 	
 	string menuInicialModoJuego = "Log Out (O) - Message (N) - List (I) - Movimiento juego (W): ";
 	
-	strng menu = menuInicial;
+	string menu = menuInicial;
 
     for(;;) {
         char receiver[10000];
@@ -158,13 +158,13 @@ int main()
 			break;
 		}
 		
-		case 'N':{
+		case 'X':{
 			cout << "Send to (reject game):";
 			fgets(receiver, 10000, stdin);
 			receiver[strlen(receiver) - 1] = '\0';
 			
 
-			string temp = "N" + string(userBuffSize) + string(receiver);
+			string temp = "X" + string(userBuffSize) + string(receiver);
 			//cout<<temp<<endl;
 			write(SocketFD, temp.c_str(), temp.size()+1);
 			break;
@@ -246,7 +246,7 @@ void thread_read(int socketC)
 
             cout << endl << buffer << ": " << msg << endl;
             
-            menu = menuInicialModoRespuesta;
+            //menu = menuInicialModoRespuesta;
         }
 	
 	//Tic Tac Toe--------------------------
@@ -260,7 +260,7 @@ void thread_read(int socketC)
 
 		cout<<buffer<< " Si quiere jugar"<<endl;
 		
-		menu = menuInicialModoJuego;
+		//menu = menuInicialModoJuego;
 	}
 	
 	    //----Movimiento en le tablero
@@ -297,7 +297,7 @@ void thread_read(int socketC)
 		
 	    cout<<buffer<< " No quiere jugar"<<endl;
 	    
-	    menu = menuInicial;
+	    //menu = menuInicial;
 	}
         
     } while(strcmp(buffer,"bye") != 0 );
