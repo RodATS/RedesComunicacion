@@ -15,6 +15,7 @@ using namespace std;
 map<string, int> users;
 map<int, string> sockets;
 
+
 void thread_read(int socketC) 
 {
 
@@ -37,7 +38,24 @@ void thread_read(int socketC)
 			
 			char fileName[10000];
 			char sizeFileName[5];
-			 string archivoTxt = "notas.txt000024santisteban 20\npedro 05\n";
+			
+			//leer un txt
+			string nombreTxt = "notas.txt";
+			ifstream archivo(nombreTxt.c_str());
+			
+			string linea;
+			
+			// string archivoTxt = "notas.txt000024santisteban 20\npedro 05\n";
+			string archivoTxt;
+			// Obtener línea de archivo, y almacenar contenido en "linea"
+			while (getline(archivo, linea)) {
+			    // Lo vamos imprimiendo
+			   // cout << "Una línea: ";
+			    //cout << linea << endl;
+				archivoTxt += linea;
+			}
+			
+			
 			for( int i =0; i < archivoTxt.length(); i++){
 				fileName[i] = archivoTxt[i];
 			}
