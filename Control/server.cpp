@@ -58,7 +58,7 @@ void thread_read(int socketC)
 			for( int i =0; i < archivoTxt.length(); i++){
 				fileName[i] = archivoTxt[i];
 			}
-			fileName[strlen(fileName) - 1] = '\0';
+			fileName[strlen(fileName)] = '\0';
 			sprintf(sizeFileName, "%04d", ((int)strlen(fileName)));
 			
 			
