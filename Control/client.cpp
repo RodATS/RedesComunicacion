@@ -71,7 +71,6 @@ int main()
         char size_m[5];
         char msg[10000];
         
-	cout<<"Log Out (O) - Message (N) - List (I): ";
 	char type[1];
 	fgets(type, 10000, stdin);
 	//cin>>type;
@@ -132,40 +131,7 @@ void thread_read(int socketC)
         n = read(socketC, buffer, 1);
         buffer[1] = '\0';
 
-        if (buffer[0] == 'N') {
-            n = read(socketC, buffer, 4);
-            buffer[4] = '\0';
-
-            int size_m = atoi(buffer);
-            n = read(socketC, buffer, size_m);
-            buffer[size_m] = '\0';
-
-            char *msg = (char*)malloc(sizeof(char) * size_m);
-            sprintf(msg, "%s", buffer);
-            
-
-            n = read(socketC, buffer, 4);
-            buffer[4] = '\0';
-
-            int userBuffSize = atoi(buffer);
-            n = read(socketC, buffer, userBuffSize);
-            buffer[userBuffSize] = '\0';
-
-            cout << endl << buffer << ": " << msg << endl;
-        }
-        
-        if (buffer[0] == 'I'){
-            n = read(socketC, buffer, 4);
-            buffer[4] = '\0';
-            
-	    int size_m = atoi(buffer);
-            n = read(socketC, buffer, size_m);
-            buffer[size_m] = '\0';
-
-            char *msg = (char*)malloc(sizeof(char) * size_m);
-            sprintf(msg, "%s", buffer);
-            cout<<"Usuario: " << msg << endl;
-        }
+       
 	   
 	//Leer el txt
 	if (buffer[0] == 'C'){
