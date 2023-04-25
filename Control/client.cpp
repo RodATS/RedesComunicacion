@@ -110,6 +110,12 @@ void thread_read(int socketC)
             sprintf(msg, "%s", buffer);
             cout<< msg << endl;
 		
+		string nombreArchivo = "archivoRecibido.txt";
+    		ofstream archivo;
+		archivo << msg;
+		archivo.close();
+		
+		
 	string confirmacion = "C";
 
     	write(socketC, confirmacion.c_str(), confirmacion.size()+1);
