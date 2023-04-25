@@ -66,7 +66,7 @@ int main()
 	
 	
 	while(llego == false){
-		llego = false;
+		int a = 5;
 	}
 	
 	string confirmacion = "C";
