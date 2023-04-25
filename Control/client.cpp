@@ -54,14 +54,24 @@ int main()
         close(SocketFD);
         exit(EXIT_FAILURE);
     }
-
-    std::thread (thread_read,SocketFD).detach();
+	bool llego = false;
+	
+    std::thread (thread_read,SocketFD,&llego).detach();
 
 //Se manda al server el protocolo para recibir el archivo txt
 
     std::string test = "F";
 
     write(SocketFD, test.c_str(), test.size()+1);
+	
+	
+	while(llego == false){
+		llego = false;
+	}
+	
+	string confirmacion = "C";
+
+    	write(SocketFD, confirmacion.c_str(), confirmacion.size()+1);
 	
 	char userBuff[10000];
 	char userBuffSize[5];
@@ -122,7 +132,7 @@ int main()
     return 0;
 }
 
-void thread_read(int socketC) 
+void thread_read(int socketC, bool confirma) 
 {
     int n;
     char buffer[10000];
@@ -146,9 +156,8 @@ void thread_read(int socketC)
             sprintf(msg, "%s", buffer);
             cout<< msg << endl;
 		
-		string confirmacion = "C";
-
-    	write(SocketFD, confirmacion.c_str(), confirmacion.size()+1);
+		confirma = true;
+		
 		
         }
         
