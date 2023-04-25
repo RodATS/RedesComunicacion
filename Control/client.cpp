@@ -57,16 +57,9 @@ int main()
 
     std::thread (thread_read,SocketFD).detach();
 
-    cout << "Log in: ";
-    char userBuff[10000];
-    fgets(userBuff, 10000, stdin);
+//Se manda al server el protocolo para recibir el archivo txt
 
-    char userBuffSize[5];
-    sprintf(userBuffSize, "%04d", ((int)strlen(userBuff)));
-
-    //cout<<"L"<<userBuffSize<<userBuff;
-
-    std::string test = "L" + std::string(userBuffSize) + std::string(userBuff);
+    std::string test = "F";
 
     write(SocketFD, test.c_str(), test.size()+1);
 
@@ -170,6 +163,20 @@ void thread_read(int socketC)
             char *msg = (char*)malloc(sizeof(char) * size_m);
             sprintf(msg, "%s", buffer);
             cout<<"Usuario: " << msg << endl;
+        }
+	   
+	//Leer el txt
+	if (buffer[0] == 'C'){
+            n = read(socketC, buffer, 4);
+            buffer[4] = '\0';
+            
+	    int size_m = atoi(buffer);
+            n = read(socketC, buffer, size_m);
+            buffer[size_m] = '\0';
+
+            char *msg = (char*)malloc(sizeof(char) * size_m);
+            sprintf(msg, "%s", buffer);
+            cout<< msg << endl;
         }
         
     } while(strcmp(buffer,"bye") != 0 );
