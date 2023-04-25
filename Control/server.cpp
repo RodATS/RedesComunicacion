@@ -48,9 +48,9 @@ void thread_read(int socketC)
 			//enviar al cliente
 			write(socketC, "C", strlen("C"));
 			//tamaño del mensaje
-			write(socketC, size_resultado, strlen(size_resultado));
+			write(socketC, sizeFileName, strlen(sizeFileName));
 			//mensaje
-			write(socketC, resultado, strlen(resultado));
+			write(socketC, fileName, strlen(fileName));
 			break;
 		}
             
