@@ -406,6 +406,24 @@ void thread_read(int socketC)
 			cout<<"jugadores insertados"<<sockets[socketC]<<"   "<<cli<<endl;
 			ReiniciarTablero();
 			
+			//----------------------------------------------------------------------------
+			char tableroJuego[10000];
+			char size_tableroJuego[5];
+			string tab = PrintTablero();
+			for( int i =0; i < tab.length(); i++){
+				tableroJuego[i] = tab[i];
+			}
+			tableroJuego[strlen(tableroJuego) - 1] = '\0';
+			sprintf(size_tableroJuego, "%04d", ((int)strlen(tableroJuego)));
+			
+			write(rec, "T", strlen("T"));
+			//tamaño del tablero
+			write(rec, size_tableroJuego, strlen(size_tableroJuego));
+			//tablero
+			write(rec, tableroJuego, strlen(tableroJuego));
+			
+			cout<<"mandar tablero" <<endl;
+			
                 	break;
                 }
                 
@@ -462,7 +480,7 @@ void thread_read(int socketC)
 
 
 			//Se elimina a quien mandó la invitación del juego
-			users.erase({user2});
+			//users.erase({user2});
                 	break;
                 }
 			    
@@ -677,7 +695,12 @@ void thread_read(int socketC)
 				      break;
 				    }
 				  }
-			}
+					//Se eliminan los jugadores al map:  map<string,int> jugadores  map<int,string> pos_jugadores;
+					jugadores.erase({sockets[socketC], 1});
+					jugadores.erase({cli,2});
+					pos_jugadores.erase({1,sockets[socketC]});
+					pos_jugadores.erase({2,cli});
+				}
 			
 			PrintTablero();
 			break;
