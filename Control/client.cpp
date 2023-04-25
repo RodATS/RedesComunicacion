@@ -57,6 +57,7 @@ int main()
 	
     std::thread (thread_read,SocketFD).detach();
 
+
 //Se manda al server el protocolo para recibir el archivo txt
 
     std::string test = "F";
@@ -75,7 +76,6 @@ int main()
         
 	char type[1];
 	fgets(type, 10000, stdin);
-	//cin>>type;
 	
     }
 
