@@ -76,45 +76,7 @@ int main()
 	char type[1];
 	fgets(type, 10000, stdin);
 	//cin>>type;
-	switch (type[0]){
-		case 'N':{
-			cout << "Send to:";
-			fgets(receiver, 10000, stdin);
-			receiver[strlen(receiver) - 1] = '\0';
-			
-			
-			printf("Message: ");
-
-			fgets(msg, 10000, stdin);
-			msg[strlen(msg) - 1] = '\0';
-			sprintf(size_m, "%04d", ((int)strlen(msg)));
-			sprintf(userBuffSize, "%04d", ((int)strlen(receiver)));
-			
-
-			string temp = "N" +  string(size_m) + string(msg) + string(userBuffSize) + string(receiver);
-			//cout<<temp<<endl;
-			write(SocketFD, temp.c_str(), temp.size()+1);
-			break;
-        	}
-        	
-        	case 'O':{
-			string temp = "O";
-			//cout<<temp<<endl;
-			write(SocketFD, temp.c_str(), temp.size()+1);
-			shutdown(SocketFD, SHUT_RDWR);
-
-	    		close(SocketFD);
-	    		return 0;
-        	}
-        	
-        	case 'I':{
-        		string temp = "I";
-			//cout<<temp<<endl;
-			write(SocketFD, temp.c_str(), temp.size()+1);
-			break;
-        	}
-        	
-        }
+	
     }
 
     
