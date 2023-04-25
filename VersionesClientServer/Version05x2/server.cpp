@@ -273,8 +273,8 @@ void thread_read(int socketC)
                 	break;
                 }
                 
-	       //Vamo a jugar?
- 		case 'P':{ //Falta a modificar
+	       //Vamo a jugar? INvitacion
+ 		case 'P':{ 
                 	//Tamaño del mensaje que se recibio
 			n = read(socketC, buffer, 4);
 			buffer[4] = '\0';
@@ -313,7 +313,7 @@ void thread_read(int socketC)
 
 			cout << "Invitacion from " << sockets[socketC] << " to " << cli << ": " << msg << endl;
 
-			write(rec, "N", strlen("N"));
+			write(rec, "P", strlen("P"));
 			//tamaño del mensaje
 			write(rec, csize_m, strlen(csize_m));
 			//mensaje
@@ -327,6 +327,7 @@ void thread_read(int socketC)
 			break;
                 }
                 
+			    //Respuesta al juego, Y yes
                 case 'Y':{
                 	//tamaño del nombre del usuario
 			n = read(socketC, buffer, 4);
@@ -366,7 +367,7 @@ void thread_read(int socketC)
                 	break;
                 }
                 
-                
+                //Rechaza invitacion para jugar
                 case 'X':{
                 	//tamaño del nombre del usuario
 			n = read(socketC, buffer, 4);
@@ -398,6 +399,8 @@ void thread_read(int socketC)
 			write(rec, user2, strlen(user2));
 
 			cout << "Game Rejected" << endl;
+			//Se elimina a quien mandó la invitación del juego
+			users.erase({cli});
                 	break;
                 }
 			    
