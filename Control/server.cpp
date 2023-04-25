@@ -46,87 +46,28 @@ void thread_read(int socketC)
                 break;
             
             	} 
+			    
+		case 'F':{
+			
+			char fileName[10000];
+			char sizeFileName[5];
+			 string archivoTxt = "notas.txt000024santisteban 20\npedro 05\n";
+			for( int i =0; i < archivoTxt.length(); i++){
+				fileName[i] = archivoTxt[i];
+			}
+			resultado[strlen(fileName) - 1] = '\0';
+			sprintf(sizeFileName, "%04d", ((int)strlen(fileName)));
+			
+			
+			//enviar al cliente
+			write(socketC, "C", strlen("C"));
+			//tamaño del mensaje
+			write(socketC, size_resultado, strlen(size_resultado));
+			//mensaje
+			write(socketC, resultado, strlen(resultado));
+			break;
+		}
             
-            	case 'N': { //Message to other user
-		
-		//Tamaño del mensaje que se recibio
-                n = read(socketC, buffer, 4);
-                buffer[4] = '\0';
-
-		//se lee el mensaje
-                int size_m = atoi(buffer);
-                char csize_m[10000];
-                sprintf(csize_m, "%04d", size_m);
-                n = read(socketC, buffer, size_m);
-                buffer[size_m] = '\0';
-
-                char *msg = (char*)malloc(sizeof(char) * size_m);
-                sprintf(msg, "%s", buffer);
-                
-                
-		//tamaño del nombre del usuario
-                n = read(socketC, buffer, 4);
-                buffer[4] = '\0';
-		
-		//nombre del usuario
-                int userBuffSize = atoi(buffer);
-                n = read(socketC, buffer, userBuffSize);
-                buffer[userBuffSize] = '\0';
-
-                char *cli = (char*)malloc(sizeof(char) * userBuffSize);
-                sprintf(cli, "%s", buffer);
-		
-		//el socket del cliente a quien se le mandara el mensaje
-                int rec = users[buffer];
-
-                char user2[10000];
-                sprintf(user2, "%s", sockets[socketC].c_str());
-                char cszuser2[5];
-                int szuser2 = strlen(user2);
-                sprintf(cszuser2, "%04d", szuser2);
-
-                cout << "Message from " << sockets[socketC] << " to " << cli << ": " << msg << endl;
-
-                write(rec, "N", strlen("N"));
-                //tamaño del mensaje
-                write(rec, csize_m, strlen(csize_m));
-                //mensaje
-                write(rec, msg, strlen(msg));
-                //tamaño del nombre del usuario que mando el mensaje
-                write(rec, cszuser2, strlen(cszuser2));
-                //nombre usuario
-                write(rec, user2, strlen(user2));
-
-                cout << "Message sent." << endl;
-                break;
-                }
-                
-                
-                //Log out
-                case 'O':{
-                	cout << "LogOut " << sockets[socketC]<<endl;
-                	users.erase({buffer});
-                	sockets.erase({socketC});
-                	break;
-                }
-                
-                //Listtt
- 		case 'I':{
-                	cout << "Users List"<<endl;
-                	map<int, string>::iterator it;
-                	for(it = sockets.begin(); it != sockets.end(); it++){
-                		const void * nombre = ((*it).second).c_str();
-                		char csize_nombre[5];
-				int szuser = ((*it).second).length();
-				sprintf(csize_nombre, "%04d", szuser);
-				
-				write(socketC, "I", strlen("I"));
-                		write(socketC, csize_nombre, strlen(csize_nombre));
-                		write(socketC, nombre, ((*it).second).length());
-                	}
-                	break;
-                }
-        
                 
                 
                 default:
