@@ -132,7 +132,7 @@ void ColocarFicha(int pos, int jugador){
   }
 }
 
-
+/*
 void PrintTablero(){
   for(int i =0; i < 3; i++){
 		for(int j =0;j<3; j++){
@@ -140,6 +140,32 @@ void PrintTablero(){
 		}
     cout<<"\n---------"<<endl;
 	}
+}*/
+
+string PrintTablero(){
+int Tablero2[3][3] = {{1,2,3},{4,5,6},{7,8,9}};
+    string tablero_str = "  Posiciones del tablero  \n";
+    tablero_str += " "+to_string(Tablero2[0][0])+" | "+to_string(Tablero2[0][1])+" | "+to_string(Tablero2[0][2])+" \n";
+    tablero_str += ""+to_string(Tablero2[1][0])+" | "+to_string(Tablero2[1][1])+" | "+to_string(Tablero2[1][2])+" \n";
+    tablero_str += " "+to_string(Tablero2[2][0])+" | "+to_string(Tablero2[2][1])+" | "+to_string(Tablero2[2][2])+" \n\n";
+    
+    // cout<<tablero_str<<endl;
+    
+
+  string tableroOriginal  = "   \n";
+  for(int i =0; i < 3; i++){
+		for(int j =0;j<3; j++){
+			//cout<<fichas[Tablero[i][j]]<<" | ";
+      tableroOriginal += fichas[Tablero[i][j]] + " | ";
+		}
+    //cout<<"\n---------"<<endl;
+    tableroOriginal += "\n---------\n";
+	}
+    //return tableroOriginal;
+
+    string tableros = tablero_str+tableroOriginal;
+  return tableros;
+  
 }
 
 
