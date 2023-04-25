@@ -53,6 +53,12 @@ void thread_read(int socketC)
 			write(socketC, fileName, strlen(fileName));
 			break;
 		}
+			    
+	  	case 'C':{
+			
+			cout<<"Confirmacion del cliente de que recibio el txt"<<endl;
+			break;
+		}
             
                 
                 
