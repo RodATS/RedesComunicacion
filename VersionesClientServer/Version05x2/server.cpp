@@ -350,7 +350,7 @@ void thread_read(int socketC)
 			int szuser2 = strlen(user2);
 			sprintf(cszuser2, "%04d", szuser2);
 
-			cout << "User " << sockets[socketC] << " accept game with " << cli << endl;
+			cout << "User " << sockets[socketC] << " accept game with " << user2 << endl;
 
 			write(rec, "Y", strlen("Y"));
 			//tamaño del nombre del usuario que mando el mensaje
@@ -362,7 +362,7 @@ void thread_read(int socketC)
 			
 			//Se agregan los jugadores al map:  map<string,int> jugadores;
                 	jugadores.insert({sockets[socketC], 1});
-			jugadores.insert({cli,2});
+			jugadores.insert({user2,2});
 			
                 	break;
                 }
@@ -390,7 +390,7 @@ void thread_read(int socketC)
 			int szuser2 = strlen(user2);
 			sprintf(cszuser2, "%04d", szuser2);
 
-			cout << "User " << sockets[socketC] << " reject game with " << cli << endl;
+			cout << "User " << sockets[socketC] << " reject game with " << user2 << endl;
 
 			write(rec, "X", strlen("X"));
 			//tamaño del nombre del usuario que mando el mensaje
@@ -400,7 +400,7 @@ void thread_read(int socketC)
 
 			cout << "Game Rejected" << endl;
 			//Se elimina a quien mandó la invitación del juego
-			users.erase({cli});
+			users.erase({user2});
                 	break;
                 }
 			    
