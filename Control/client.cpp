@@ -1,3 +1,4 @@
+ #include <bits/stdc++.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -119,7 +120,9 @@ void thread_read(int socketC)
 	string confirmacion = "C";
 
     	write(socketC, confirmacion.c_str(), confirmacion.size()+1);
-		
+	shutdown(socketC, SHUT_RDWR);
+
+   	 close(socketC);	
 		
         }
         
