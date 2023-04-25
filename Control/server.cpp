@@ -31,21 +31,7 @@ void thread_read(int socketC)
             switch (protocol)
             {   
                 
-                case 'L': { //Login
-                n = read(socketC, buffer, 4);
-                buffer[4] = '\0';
-                //cout<<buffer<<endl;
-                int userBuffSize = atoi(buffer);
-                //cout<<userBuffSize<<endl;
-                n = read(socketC, buffer, userBuffSize+1);
-                buffer[userBuffSize - 1] = '\0';
                 
-                cout << "Login: " << buffer << endl;
-                users.insert({buffer, socketC});
-                sockets.insert({socketC, buffer});
-                break;
-            
-            	} 
 			    
 		case 'F':{
 			
