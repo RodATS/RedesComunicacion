@@ -131,7 +131,7 @@ int main()
 			fgets(receiver, 10000, stdin);
 			receiver[strlen(receiver) - 1] = '\0';
 			
-			string pregJugar = "Jugamos TicTacToe: (Y/N)";
+			string pregJugar = "Jugamos TicTacToe: (Y/X) ";
 			for( int i =0; i < pregJugar.length(); i++){
 				msg[i] = pregJugar[i];
 			}
