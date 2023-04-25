@@ -381,7 +381,10 @@ void thread_read(int socketC)
 			
 			//Se agregan los jugadores al map:  map<string,int> jugadores;
                 	jugadores.insert({sockets[socketC], 1});
-			jugadores.insert({user2,2});
+			jugadores.insert({cli,2});
+			
+			cout<<"jugadores insertados"<<sockets[socketC]<<"   "<<cli<<endl;
+			ReiniciarTablero();
 			
                 	break;
                 }
@@ -444,7 +447,7 @@ void thread_read(int socketC)
                 }
 			    
 		case 'W': { //Movimientos 3 en raya
-		
+			
 			//Tamaño del mensaje que se recibio
 			n = read(socketC, buffer, 4);
 			buffer[4] = '\0';
@@ -499,6 +502,8 @@ void thread_read(int socketC)
 			write(rec, user2, strlen(user2));
 
 			cout << "Message sent." << endl;
+			
+			PrintTablero();
 			break;
                 }
         
@@ -564,3 +569,6 @@ int main()
     close(SocketFD);
     return 0;
 }
+	
+	
+  
