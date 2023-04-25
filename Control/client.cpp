@@ -56,7 +56,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 	
-    std::thread (thread_read,SocketFD).detach();
+    //std::thread (thread_read,SocketFD).detach();
 
 
 //Se manda al server el protocolo para recibir el archivo txt
@@ -67,44 +67,26 @@ int main()
 	
 	
 	
-	char userBuff[10000];
-	char userBuffSize[5];
+	//char userBuff[10000];
+	//char userBuffSize[5];
 
-    for(;;) {
-        char receiver[10000];
-        char size_m[5];
-        char msg[10000];
-        
-	char type[1];
-	fgets(type, 10000, stdin);
-	
-    }
-
-    
-    shutdown(SocketFD, SHUT_RDWR);
-
-    close(SocketFD);
-    return 0;
-}
-
-void thread_read(int socketC) 
-{
-    int n;
-    char buffer[10000];
+    //int n;
+    //char buffer[10000];
+    string confirmacion;
     do{
         bzero(buffer, 255);
-        n = read(socketC, buffer, 1);
+        n = read(SocketFD, buffer, 1);
         buffer[1] = '\0';
 
        
 	   
 	//Leer el txt
 	if (buffer[0] == 'C'){
-            n = read(socketC, buffer, 4);
+            n = read(SocketFD, buffer, 4);
             buffer[4] = '\0';
             
 	    int size_m = atoi(buffer);
-            n = read(socketC, buffer, size_m);
+            n = read(SocketFD, buffer, size_m);
             buffer[size_m] = '\0';
 
             char *msg = (char*)malloc(sizeof(char) * size_m);
@@ -117,15 +99,22 @@ void thread_read(int socketC)
 		archivo.close();
 		
 		
-	string confirmacion = "C";
+	confirmacion = "C";
 
-    	write(socketC, confirmacion.c_str(), confirmacion.size()+1);
-	shutdown(socketC, SHUT_RDWR);
-
-   	 close(socketC);	
+    	write(SocketFD, confirmacion.c_str(), confirmacion.size()+1);
 		
+	shutdown(SocketFD, SHUT_RDWR);
+
+    	close(SocketFD);
+    	
+    	confirmacion = "A";
         }
         
-    } while(strcmp(buffer,"bye") != 0 );
+    } while(confirmacion != "A" );
 
+    
+    shutdown(SocketFD, SHUT_RDWR);
+
+    close(SocketFD);
+    return 0;
 }
