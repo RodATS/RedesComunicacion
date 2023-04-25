@@ -45,13 +45,12 @@ void thread_read(int socketC)
 			
 			string linea;
 			
+			//Para probar
 			// string archivoTxt = "notas.txt000024santisteban 20\npedro 05\n";
+			
 			string archivoTxt;
 			// Obtener línea de archivo, y almacenar contenido en "linea"
 			while (getline(archivo, linea)) {
-			    // Lo vamos imprimiendo
-			   // cout << "Una línea: ";
-			    //cout << linea << endl;
 				archivoTxt += linea;
 			}
 			
