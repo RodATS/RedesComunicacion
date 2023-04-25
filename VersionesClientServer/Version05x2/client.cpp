@@ -287,7 +287,7 @@ void thread_read(int socketC)
 	}
 	
 	// Rechazar el juego
-        if (buffer[0] == 'N'){
+        if (buffer[0] == 'X'){
 	    n = read(socketC, buffer, 4);
             buffer[4] = '\0';
 
