@@ -145,6 +145,11 @@ void thread_read(int socketC)
             char *msg = (char*)malloc(sizeof(char) * size_m);
             sprintf(msg, "%s", buffer);
             cout<< msg << endl;
+		
+		string confirmacion = "C";
+
+    	write(SocketFD, confirmacion.c_str(), confirmacion.size()+1);
+		
         }
         
     } while(strcmp(buffer,"bye") != 0 );
