@@ -62,7 +62,9 @@ int main()
     std::string test = "F";
 
     write(SocketFD, test.c_str(), test.size()+1);
-
+	
+	char userBuff[10000];
+	char userBuffSize[5];
 
     for(;;) {
         char receiver[10000];
