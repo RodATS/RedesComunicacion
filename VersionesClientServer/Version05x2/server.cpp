@@ -696,10 +696,10 @@ void thread_read(int socketC)
 				    }
 				  }
 					//Se eliminan los jugadores al map:  map<string,int> jugadores  map<int,string> pos_jugadores;
-					jugadores.erase({sockets[socketC], 1});
-					jugadores.erase({cli,2});
-					pos_jugadores.erase({1,sockets[socketC]});
-					pos_jugadores.erase({2,cli});
+					jugadores.erase({sockets[socketC]});
+					jugadores.erase({cli});
+					pos_jugadores.erase({1});
+					pos_jugadores.erase({2});
 				}
 			
 			PrintTablero();
