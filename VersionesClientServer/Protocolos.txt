@@ -1,0 +1,7 @@
+L: Login
+N: Mensaje a otro cliente
+I: Clientes conectados al server
+P: INvitar a un cliente a jugar  en raya
+X: rechazar invitacion juego
+Y: Aceptar invitacion juego
+W: movimiento del juego
