@@ -5,3 +5,5 @@ Ya funcinoa el server, YA LO ARREGLÉ
 Hay que explicar cada funcion? <br>
 Yo puse esto (CLiente) Explicas cada protoclo (switch del cliente)<br>	Internamente se guarda así: 01N (tamaño mensaje) (mensaje) (tamaño nombre usuario destinatario) (nombre usuario destinatario). <br>
 string temp = "N" +  string(size_m) + string(msg) + string(userBuffSize) + string(receiver);
+
+Estas modificando client?, o lo modifico yo?
