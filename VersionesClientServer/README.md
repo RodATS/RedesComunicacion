@@ -1,6 +1,7 @@
 Integrantes:<br>
 -Eileen Apaza<br>
 -Rodrigo Torres<br>
+PAra correr con threads: g++ -o server.cpp server.exe -pthread igual para el cliente<br>
 Version 1: hacer un chat.<br>
 Version 2: un thread en el cliente para recibir n mensajes.<br>
 Version 3: mandar mensajes de un cliente a otro, usando threads y el server los conecta. <br>
