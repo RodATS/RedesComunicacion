@@ -1,4 +1,5 @@
 L: Login
+O: Log out
 N: Mensaje a otro cliente
 I: Clientes conectados al server
 P: INvitar a un cliente a jugar  en raya
