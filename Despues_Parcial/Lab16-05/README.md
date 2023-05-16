@@ -10,7 +10,7 @@ Cap 7: Técnicas avanzadas - Select<br>
  El select es para todo file desctriptor: terminal, mouse, socket, todo ls dispositivos y archivos.
 
 
-<h4> Codigo </h4>
+<h4> Código </h4>
 master lista de vectores. <br>
 read_fds: donde leere los vecotres
 fdmax: max de vectores, cero al inicio
@@ -27,3 +27,5 @@ FD_SET listener: va en el vector master.<br>
 
 <h6>fdmax = listener;</h6>
 saber el max tamaño de los descriptores en el master. Emparejamos los descriptores con el maximo, sabremos el descriptor mayor (los descriptores son secuenciales).
+
+<h3> Tarea: copiar le codigo, compilarlo para el 23/05</h3>
