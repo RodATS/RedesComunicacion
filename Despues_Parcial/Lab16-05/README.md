@@ -1,7 +1,7 @@
 Esta en elaula virtual: book socket guide (lIbro <br>
 Cap 7: Técnicas avanzadas - Select<br>
 
-<li>Leer todo por siaca/<li>
+<li>Leer todo por siaca</li>
 <li>SET: Vector del cuaderno select</li>
 <li>Hay Funcinodes FD_: ejemplo FD_ZERO limpia el vector. </li>
  <li> Hay un codigo en la pag 37 al final.</li>
