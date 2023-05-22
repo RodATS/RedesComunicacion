@@ -35,7 +35,7 @@ int main(void)
 
 	int listener; 		//listening socket descriptor
 	int newfd;			//newly accepted() socket descriptor
-	struct sockaddr_storage remoteadrr; //client address, estructura que indica el puerto del cliente
+	struct sockaddr_storage remoteaddr; //client address, estructura que indica el puerto del cliente
 	socklen_t addrlen; 	//tamaño de la estructura
 
 	char buf[256];	//buffer for client data
