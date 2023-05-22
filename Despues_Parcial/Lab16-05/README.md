@@ -22,7 +22,7 @@ Cap 7: Técnicas avanzadas - Select<br>
 <li> read_fds: temporal del master, copia </li>
 
 LAS VARIABLES SON DIFERNETES PERO EL PROCEDIMINETO SI ES CONOCIDO <br>
-<li> binging: conectar la estructura con el socket, el server lo tiene pero diferente.</li>
+<li> binding: conectar la estructura con el socket, el server lo tiene pero diferente.</li>
 <li> FD_SET listener: va en el vector master.</li>
 
 <h6>fdmax = listener;</h6>
