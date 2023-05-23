@@ -165,6 +165,25 @@ int main(void)
 					//2. crear char buf_size[7], añade al string añadir : , y se vuelve entero este char
 					//3. nbytes = recv(i, buf, el char buff_size en enteero, 0)
 					
+					//0.
+					string mensaje;
+					char buff_id[9];
+					char buff_size[7];
+					(nbytes = recv(i, buff_id, 9, 0));
+					//Meterlo al string
+					
+					mensaje+= ":";
+					(nbytes = recv(i, buff_size, 7, 0));
+					//Meterlo al string
+					mensaje+= ":";
+					//volverlo string
+					int tamaño_mensaje;
+					(nbytes = recv(i, buf, tamaño_mensaje, 0));
+					
+					char final[10];
+					//Meterlo al string
+					(nbytes = recv(i, final, 10, 0));
+					
 					if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) 
 					{
 						// got error or connection closed by client
@@ -183,6 +202,10 @@ int main(void)
 					}
 					else
 					{
+						//meterlo en un nuevo buffer
+						char *mensaje_final;
+						
+						
 						// we got some data from a client
 						for(j = 0; j <= fdmax; j++) 
 						{
@@ -194,6 +217,7 @@ int main(void)
 								{
 									//reenvia el mensaje
 									//ENVIAR EL NUEVO BUFF
+									//(send(j, mensaje_final, sizeof mensaje_final, 0)
 									if (send(j, buf, nbytes, 0) == -1) 
 									{
 										perror("send");
