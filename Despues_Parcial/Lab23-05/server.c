@@ -167,6 +167,8 @@ int main(void)
 					
 					//0.
 					string mensaje;
+					
+					//agregar el numero del paquete
 					char buff_id[9];
 					char buff_size[7];
 					(nbytes = recv(i, buff_id, 9, 0));
@@ -183,7 +185,7 @@ int main(void)
 					char final[10];
 					//Meterlo al string
 					(nbytes = recv(i, final, 10, 0));
-					
+					mensaje+= "\n";
 					if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) 
 					{
 						// got error or connection closed by client
