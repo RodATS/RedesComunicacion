@@ -17,7 +17,8 @@ Número del mensaje: será de 5 BYtes  -   9 Bytes: ID, ver si estos son iguales
 Cat: abre el archivo standard output -> standar input del server <br>
 cat data.txt | nc  al servidor con IPAdrr: 127.0.0.1  -  puerto: 9034 <br>
 cat data.txt | nc 127.0.0.1 9034
-<br> Leer <br>
+<h3>Como leer el mensaje</h3>
+En otra terminal, actua como cliente <br>
 nc 127.0.0.1 9034
 
 
