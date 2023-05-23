@@ -105,24 +105,36 @@ int main(void)
 	// keep track of the biggest file descriptor
 	fdmax = listener; // so far, it's this one
 
+	
+	
+	//-----------------------------------------------------------------------------------------------------------------
 	// main loop-------
 	for(;;)
 	{
+		
 		read_fds = master; // copy it
+		//acá espera el programa
 		if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) 
 		{
 			perror("select");
 			exit(4);
 		}
-
-	// run through the existing connections looking for data to read
+		
+		
+	//buscar datos existentes
+	// run through the existing connections looking for data to read-------------------------------
+		//fdmax: socket mayor o más grande  - Los desciprtores se crean de amnera ordenada
 		for(i = 0; i <= fdmax; i++) {
+			//ver si hay info para leer
+			//si la i está dentro del vector
 			if (FD_ISSET(i, &read_fds)) 
 			{ // we got one!!
+				//nueva conexón
 				if (i == listener)
 				{
 					// handle new connections
 					addrlen = sizeof remoteaddr;
+					//accept: nuevo cliente, lo agregamos al vector maestro
 					newfd = accept(listener,(struct sockaddr *)&remoteaddr,	&addrlen);
 				
 					if (newfd == -1) 
@@ -131,6 +143,7 @@ int main(void)
 					}
 					else 
 					{
+						//accept: nuevo cliente, lo agregamos al vector maestro
 						FD_SET(newfd, &master); // add to master set
 						if (newfd > fdmax) 
 						{ // keep track of the max
@@ -139,9 +152,19 @@ int main(void)
 						printf("selectserver: new connection from %s on ""socket %d\n",	inet_ntop(remoteaddr.ss_family,	get_in_addr((struct sockaddr*)&remoteaddr),	remoteIP, INET6_ADDRSTRLEN), newfd);
 					}
 				}
+//---------------------------------no es nuevo cliente-------------------- ESTO MODIFICAR--------------------------------
 				else
 				{
-					// handle data from a client
+					// handle data from a client, manenjar datos
+					//nbytes: tamaño del mensaje
+					//i= socket, leer buf, leer tamaño determinado del buff 256
+					//aca debe leer los 16 Bytes iniciales -> se sabe le tamaño del mensaje -> 10 Bytes finales
+					//Opciones
+					//0. Crear un string, para almacenar todo el mensaje
+					//1. crear char buf_id[9], añade al string, añadir :
+					//2. crear char buf_size[7], añade al string añadir : , y se vuelve entero este char
+					//3. nbytes = recv(i, buf, el char buff_size en enteero, 0)
+					
 					if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) 
 					{
 						// got error or connection closed by client
@@ -155,6 +178,7 @@ int main(void)
 							perror("recv");
 						}
 						close(i); // bye!
+						//sacarlo de la lista, porquw se cierra la conexión
 						FD_CLR(i, &master); // remove from master set
 					}
 					else
@@ -168,6 +192,8 @@ int main(void)
 								// except the listener and ourselves
 								if (j != listener && j != i) 
 								{
+									//reenvia el mensaje
+									//ENVIAR EL NUEVO BUFF
 									if (send(j, buf, nbytes, 0) == -1) 
 									{
 										perror("send");
