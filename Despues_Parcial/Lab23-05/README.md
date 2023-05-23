@@ -11,5 +11,5 @@ Mandar los 10K archivos.<br>
 
 
 <h3>Como mandar el mensaje</h3>
-
-cat data.txt al servidor con IPAdrr: 127.0.0.1  -  puerto: 9034
+Cat: abre el archivo standard output -> standar input del server <br>
+cat data.txt nc (netCat) al servidor con IPAdrr: 127.0.0.1  -  puerto: 9034
