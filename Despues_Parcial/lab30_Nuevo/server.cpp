@@ -37,7 +37,7 @@ int main(void){
 	int yes=1; // for setsockopt() SO_REUSEADDR, below
 	int i, j, rv,count=1;
 	string response, response1, response2, response3, response4, response5, response6, response7, response8, response9;
-	string arr_response[10] = [response, response1, response2, response3, response4, response5, response6, response7, response8, response9];
+	string arr_response[10] = {response, response1, response2, response3, response4, response5, response6, response7, response8, response9};
 	
 	struct addrinfo hints, *ai, *p;
 	FD_ZERO(&master); // clear the master and temp sets
@@ -127,7 +127,7 @@ int main(void){
 	else {
 	// we got some data from a client
 		//nbytes = recv(i, buf, 9 , 0);
-		indice = 0;
+		int indice = 0;
 		
 		
 		buf[9] = '\0';
