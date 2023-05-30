@@ -35,8 +35,10 @@ int main(void){
 	int nbytes;
 	char remoteIP[INET6_ADDRSTRLEN];
 	int yes=1; // for setsockopt() SO_REUSEADDR, below
-	int i, j, rv,count=0;
-	string response;
+	int i, j, rv,count=1;
+	string response, response1, response2, response3, response4, response5, response6, response7, response8, response9;
+	string arr_response[10] = [response, response1, response2, response3, response4, response5, response6, response7, response8, response9];
+	
 	struct addrinfo hints, *ai, *p;
 	FD_ZERO(&master); // clear the master and temp sets
 	FD_ZERO(&read_fds);
@@ -125,20 +127,23 @@ int main(void){
 	else {
 	// we got some data from a client
 		//nbytes = recv(i, buf, 9 , 0);
-		buf[9] = '\0';
-		response = "";
-		response +=to_string(count);count++;
+		indice = atoi(buf[8]);
 		
-		response +=":";
-		response += buf;
-		response +=":";
+		
+		buf[9] = '\0';
+		arr_response[indice] = "";
+		arr_response[indice]  +=to_string(count);count++;
+		
+		arr_response[indice]  +=":";
+		arr_response[indice]  += buf;
+		arr_response[indice]  +=":";
 		nbytes = recv(i, buf, 1 , 0);
 		buf[1] = '\0';
 		
 		nbytes = recv(i, buf, 7 , 0);
 		buf[7] = '\0';
-		response += buf;
-		response +=":";
+		arr_response[indice]  += buf;
+		arr_response[indice]  +=":";
 		
 		int tam = atoi(buf); //cout<<tam<<endl;
 		nbytes = recv(i, buf, 1 , 0);
@@ -146,15 +151,15 @@ int main(void){
 		
 		nbytes = recv(i, buf, tam , 0);
 		buf[tam] = '\0';
-		response+=buf;
-		response +=":";
+		arr_response[indice] +=buf;
+		arr_response[indice]  +=":";
 		
 		nbytes = recv(i, buf, 1 , 0);
 		buf[1] = '\0';
 		nbytes = recv(i, buf, 10 , 0);
 		buf[10] = '\0';
-		response+=buf;
-		response +="\n";
+		arr_response[indice] +=buf;
+		arr_response[indice]  +="\n";
 		
 		nbytes = recv(i, buf, 1 , 0);
 		buf[1] = '\0';
@@ -166,7 +171,7 @@ int main(void){
 			if (FD_ISSET(j, &master)) {
 				// except the listener and ourselves
 				if (j != listener && j != i) {
-				if (send(j, response.c_str(),  strlen(response.c_str()), 0) == -1) {
+				if (send(j, arr_response[indice].c_str(),  strlen(arr_response[indice].c_str()), 0) == -1) {
 				perror("send");
 				}
 				}
