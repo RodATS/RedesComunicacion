@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+
 //--------------------------------
 
 //Puerto que escuchamos
@@ -170,7 +171,6 @@ int main(void)
 					
 					//agregar el numero del paquete
 					char buff_id[9];
-					char buff_size[7];
 					if ((nbytes = recv(i, buff_id, 9, 0));<= 0) 
 					{
 						// got error or connection closed by client
@@ -201,27 +201,48 @@ int main(void)
 						mensaje+= ":";
 						
 						
+						char buff_size[7];
 						(nbytes = recv(i, buff_size, 7, 0));
 						//Meterlo al string
+						string tamaño;
 						for(indice_buff_2 = 0; indice_buff_2 < 9; indice_buff_2++)
 						{
-							mensaje += buff_id[indice_buff_2];
+							mensaje += buff_size[indice_buff_2];
+							tamaño += buff_size[indice_buff_2];
 						}
+						
+						//volverlo int
+						int tamaño_mensaje = atoi(tamaño);
 						mensaje+= ":";
 						
-						//volverlo string
-						int tamaño_mensaje;
 						(nbytes = recv(i, buf, tamaño_mensaje, 0));
-
+						for(indice_buff_3 = 0; indice_buff_3 < tamaño_mensaje; indice_buff_3++)
+						{
+							mensaje += buf[indice_buff_3];
+						}
+						
+						mensaje+= ":";
 						char final[10];
 						//Meterlo al string
 						(nbytes = recv(i, final, 10, 0));
+						for(indice_buff_4 = 0; indice_buff_4 < 10; indice_buff_4++)
+						{
+							mensaje += final[indice_buff_4];
+						}
+						
 						mensaje+= "\n";
 						
 						//--------------
 						//meterlo en un nuevo buffer
-						char *mensaje_final;
 						
+						int tamaño_mensaje_final= (strlen(mensaje) + 1);
+						char *mensaje_final = (char *)malloc( tamaño_mensaje_final * sizeof(char));
+    
+						
+						for (int indice_j = 0; indice_j < tamaño_mensaje_final - 1; j++) {
+							mensaje_final[indice_j] = hola[indice_j];
+						 }
+						 mensaje_final[tamaño_mensaje_final - 1] = '\0';
 						
 						// we got some data from a client
 						for(j = 0; j <= fdmax; j++) 
@@ -235,7 +256,7 @@ int main(void)
 									//reenvia el mensaje
 									//ENVIAR EL NUEVO BUFF
 									//(send(j, mensaje_final, sizeof mensaje_final, 0)
-									if (send(j, buf, nbytes, 0) == -1) 
+									if (send(j, mensaje_final, tamaño_mensaje_final - 1, 0) == -1) 
 									{
 										perror("send");
 									}
