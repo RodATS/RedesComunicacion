@@ -127,7 +127,7 @@ int main(void){
 	else {
 	// we got some data from a client
 		//nbytes = recv(i, buf, 9 , 0);
-		indice = atoi(buf[8]);
+		indice = 0;
 		
 		
 		buf[9] = '\0';
