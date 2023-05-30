@@ -171,22 +171,7 @@ int main(void)
 					//agregar el numero del paquete
 					char buff_id[9];
 					char buff_size[7];
-					(nbytes = recv(i, buff_id, 9, 0));
-					//Meterlo al string
-					
-					mensaje+= ":";
-					(nbytes = recv(i, buff_size, 7, 0));
-					//Meterlo al string
-					mensaje+= ":";
-					//volverlo string
-					int tamaño_mensaje;
-					(nbytes = recv(i, buf, tamaño_mensaje, 0));
-					
-					char final[10];
-					//Meterlo al string
-					(nbytes = recv(i, final, 10, 0));
-					mensaje+= "\n";
-					if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) 
+					if ((nbytes = recv(i, buff_id, 9, 0));<= 0) 
 					{
 						// got error or connection closed by client
 						if (nbytes == 0)
@@ -202,8 +187,38 @@ int main(void)
 						//sacarlo de la lista, porquw se cierra la conexión
 						FD_CLR(i, &master); // remove from master set
 					}
+					
+					
+					
 					else
 					{
+						
+						//Meterlo al string
+						for(indice_buff = 0; indice_buff < 9; indice_buff++)
+						{
+							mensaje += buff_id[indice_buff];
+						}
+						mensaje+= ":";
+						
+						
+						(nbytes = recv(i, buff_size, 7, 0));
+						//Meterlo al string
+						for(indice_buff_2 = 0; indice_buff_2 < 9; indice_buff_2++)
+						{
+							mensaje += buff_id[indice_buff_2];
+						}
+						mensaje+= ":";
+						
+						//volverlo string
+						int tamaño_mensaje;
+						(nbytes = recv(i, buf, tamaño_mensaje, 0));
+
+						char final[10];
+						//Meterlo al string
+						(nbytes = recv(i, final, 10, 0));
+						mensaje+= "\n";
+						
+						//--------------
 						//meterlo en un nuevo buffer
 						char *mensaje_final;
 						
