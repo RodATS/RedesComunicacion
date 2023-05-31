@@ -95,25 +95,24 @@ int main(void){
 		for(i = 0; i <= fdmax; i++) {
 			if (FD_ISSET(i, &read_fds)) { // we got one!!
 			if (i == listener) {
-			
-				// handle new connections
-				addrlen = sizeof remoteaddr;
-				newfd = accept(listener,(struct sockaddr *)&remoteaddr,&addrlen);
-				
-				if (newfd == -1) {
-					error("accept");
-				} else {
-					FD_SET(newfd, &master); // add to master set
-					if (newfd > fdmax) { // keep track of the max
-						fdmax = newfd;
-					}
-					printf("selectserver: new connection from %s on "
-					"socket %d\n",
-					inet_ntop(remoteaddr.ss_family,
-					get_in_addr((struct sockaddr*)&remoteaddr),
-					remoteIP, INET6_ADDRSTRLEN),
-					newfd);
-				}
+			// handle new connections
+			addrlen = sizeof remoteaddr;
+			newfd = accept(listener,
+			(struct sockaddr *)&remoteaddr,&addrlen);
+			if (newfd == -1) {
+			perror("accept");
+			} else {
+			FD_SET(newfd, &master); // add to master set
+			if (newfd > fdmax) { // keep track of the max
+			fdmax = newfd;
+			}
+			printf("selectserver: new connection from %s on "
+			"socket %d\n",
+			inet_ntop(remoteaddr.ss_family,
+			get_in_addr((struct sockaddr*)&remoteaddr),
+			remoteIP, INET6_ADDRSTRLEN),
+			newfd);
+			}
 			} else {
 			// handle data from a client
 			
@@ -132,7 +131,7 @@ int main(void){
 			else {
 			// we got some data from a client
 				//nbytes = recv(i, buf, 9 , 0);
-				int indice = 0;
+				int indice = i;
 				
 				
 				buf[9] = '\0';
