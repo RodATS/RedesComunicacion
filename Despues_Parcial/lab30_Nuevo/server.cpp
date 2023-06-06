@@ -136,7 +136,7 @@ int main(void){
 				//nbytes = recv(i, buf, 9 , 0);
 				nombre_archivo = "data";
 				
-				int indice = i;
+				int indice = i-5;
 				
 				
 				buf[9] = '\0';
@@ -173,9 +173,12 @@ int main(void){
 				nbytes = recv(i, buf, 1 , 0);
 				buf[1] = '\0';
 				
-				nombre_archivo+= indice;
-				archivo = fopen( nombre_archivo, "w"); // En el segundo parametro se escribe la forma en que sera abierto "w"
+				
+				nombre_archivo+= to_string(indice);
+				nombre_archivo+= ".txt";
+				archivo = fopen( nombre_archivo.c_str(), "w"); // En el segundo parametro se escribe la forma en que sera abierto "w"
 				fprintf(archivo,arr_response[indice].c_str());
+				
 				
 				for(j = 0; j <= fdmax; j++) {
 				// send to everyone!
