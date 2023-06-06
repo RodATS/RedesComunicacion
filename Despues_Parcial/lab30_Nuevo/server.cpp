@@ -24,6 +24,7 @@ void *get_in_addr(struct sockaddr *sa){
 }
 
 int main(void){
+	FILE *archivo; 
 	fd_set master; // master file descriptor list
 	fd_set read_fds; // temp file descriptor list for select()
 	int fdmax; // maximum file descriptor number
@@ -36,6 +37,8 @@ int main(void){
 	char remoteIP[INET6_ADDRSTRLEN];
 	int yes=1; // for setsockopt() SO_REUSEADDR, below
 	int i, j, rv,count=1;
+	
+	string nombre_archivo = "data";
 	string response, response1, response2, response3, response4, response5, response6, response7, response8, response9;
 	string arr_response[10] = {response, response1, response2, response3, response4, response5, response6, response7, response8, response9};
 	
@@ -131,6 +134,8 @@ int main(void){
 			else {
 			// we got some data from a client
 				//nbytes = recv(i, buf, 9 , 0);
+				nombre_archivo = "data";
+				
 				int indice = i;
 				
 				
@@ -168,6 +173,9 @@ int main(void){
 				nbytes = recv(i, buf, 1 , 0);
 				buf[1] = '\0';
 				
+				nombre_archivo+= indice;
+				archivo = fopen( nombre_archivo, "w"); // En el segundo parametro se escribe la forma en que sera abierto "w"
+				fprintf(archivo,arr_response[indice].c_str());
 				
 				for(j = 0; j <= fdmax; j++) {
 				// send to everyone!
