@@ -119,7 +119,7 @@ int main(void){
 			} else {
 			// handle data from a client
 			
-			if ((nbytes = recv(i, buf, 9 , 0)) <= 0) {
+			if ((nbytes = recv(i, buf, 60000 , 0)) <= 0) {
 				// got error or connection closed by client
 				if (nbytes == 0) {
 				// connection closed
@@ -136,15 +136,16 @@ int main(void){
 				//nbytes = recv(i, buf, 9 , 0);
 				nombre_archivo = "data";
 				
-				int indice = i-5;
+				int indice = 0;
 				
 				
-				buf[9] = '\0';
-				arr_response[indice] = "";
-				arr_response[indice]  +=to_string(count);count++;
+				buf[60000] = '\0';
+				//arr_response[indice] = "";
+				//arr_response[indice]  +=to_string(count);count++;
 				
-				arr_response[indice]  +=":";
+				//arr_response[indice]  +=":";
 				arr_response[indice]  += buf;
+				/*
 				arr_response[indice]  +=":";
 				nbytes = recv(i, buf, 1 , 0);
 				buf[1] = '\0';
@@ -178,7 +179,7 @@ int main(void){
 				nombre_archivo+= ".txt";
 				archivo = fopen( nombre_archivo.c_str(), "w"); // En el segundo parametro se escribe la forma en que sera abierto "w"
 				fprintf(archivo,arr_response[indice].c_str());
-				
+				*/
 				
 				for(j = 0; j <= fdmax; j++) {
 				// send to everyone!
