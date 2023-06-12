@@ -230,6 +230,7 @@ int main(void){
                     } 
                     else
                     {
+			 //hacer que cada socket tenga un flag
 			int flag = 1;
                         buf[nbytes] = '\0';
                         thread (thread_read, buf, i, listener, fdmax, master, files, identificador, flag).detach();
