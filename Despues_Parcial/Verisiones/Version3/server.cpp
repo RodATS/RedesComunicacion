@@ -24,7 +24,7 @@ map<int, string> sockets;
 
 //--------------------
 
-void thread_read(char buf[], int SocketCliente, int listener, int fdmax, fd_set &master, map<int,string> &files, int &identi) 
+void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, map<int,string> &files, int &identi) 
 {
 	int nbytes;
     int j, count = 0;
@@ -48,7 +48,7 @@ void thread_read(char buf[], int SocketCliente, int listener, int fdmax, fd_set 
         
         string id = "";
         id += buf[9-1];
-        indenti = atoi(id.c_str());
+        identi = atoi(id.c_str());
         
         if(files[SocketCliente]=="\0") {
             files[SocketCliente] = " ";
@@ -217,18 +217,18 @@ int main(void){
                         // got error or connection closed by client
                         if (nbytes == 0) {
                             // connection closed
-                            printf("selectserver: socket %d hung up\n", SocketCliente);
+                            printf("selectserver: socket %d hung up\n", i);
                         } 
                         else {
                             perror("recv");
                         }
-                        close(SocketCliente); // bye!
-                        FD_CLR(SocketCliente, &master); // remove from master set
+                        close(i); // bye!
+                        FD_CLR(i, &master); // remove from master set
                     } 
                     else
                     {
                         buf[nbytes] = '\0';
-                        std::thread (thread_read, buf, i, listener, fdmax, master, files, identificador).detach();
+                        thread (thread_read, buf, i, listener, fdmax, master, files, identificador).detach();
                     }
                 } // END handle data from client
             } // END got new incoming connection
