@@ -24,83 +24,86 @@ map<int, string> sockets;
 
 //--------------------
 
-void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, map<int,string> &files, int &identi) 
+void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, map<int,string> &files, int &identi, int &flag) 
 {
-	int nbytes;
-    int j, count = 0;
-    string response;
-    // handle data from a client
-                    
-    
-    //falta leer 9
-    // we got some data from a client
-        //nbytes = recv(i, buf, 1 , 0);
-        //contador
-        response = "";
-        response +=to_string(count);count++;
-        response +=":";
+	if(flag == 1){
+		int nbytes;
+	    int j, count = 0;
+	    string response;
+	    // handle data from a client
 
-        //id txt
-        int indice;
-        for(indice = 0; indice < 9; indice++){
-            response += buf[indice];
-        }
-        
-        string id = "";
-        id += buf[9-1];
-        identi = atoi(id.c_str());
-        
-        if(files[SocketCliente]=="\0") {
-            files[SocketCliente] = " ";
-            cout<<"a"<<endl;
-        }
-        
-        
-        response +=":";
-        indice++; //:
 
-        string tamaño = "";
-        //tamaño leer 7
-        for(; indice < indice + 7; indice++){
-            response += buf[indice];
-            tamaño += buf[indice];
-        }
+	    //falta leer 9
+	    // we got some data from a client
+		//nbytes = recv(i, buf, 1 , 0);
+		//contador
+		response = "";
+		response +=to_string(count);count++;
+		response +=":";
 
-        response +=":";
-        indice++; //:
+		//id txt
+		int indice;
+		for(indice = 0; indice < 9; indice++){
+		    response += buf[indice];
+		}
 
-        int tam = stoi(tamaño); 
+		string id = "";
+		id += buf[9-1];
+		identi = atoi(id.c_str());
 
-        for(; indice < indice + tam; indice++){
-            response += buf[indice];
-        }
+		if(files[SocketCliente]=="\0") {
+		    files[SocketCliente] = " ";
+		    cout<<"a"<<endl;
+		}
 
-        response +=":";
-        indice++;//:
-        
 
-        for(; indice < indice + 10; indice++){
-            response += buf[indice];
-        }
+		response +=":";
+		indice++; //:
 
-        response +="\n";
-        
-        files[SocketCliente] += response;
-        //cout<<response<<endl;
-        
+		string tamaño = "";
+		//tamaño leer 7
+		for(; indice < indice + 7; indice++){
+		    response += buf[indice];
+		    tamaño += buf[indice];
+		}
 
-        for(j = 0; j <= fdmax; j++) {
-        // send to everyone
-            if (FD_ISSET(j, &master)) {
-                //except the listener and ourselves
-                if (j != listener && j != SocketCliente) {
-                    if (send(j, response.c_str(),  strlen(response.c_str()), 0) == -1) {
-                        perror("send");
-                    }
-                }
-            }
-        }
-    
+		response +=":";
+		indice++; //:
+
+		int tam = stoi(tamaño); 
+
+		for(; indice < indice + tam; indice++){
+		    response += buf[indice];
+		}
+
+		response +=":";
+		indice++;//:
+
+
+		for(; indice < indice + 10; indice++){
+		    response += buf[indice];
+		}
+
+		response +="\n";
+
+		files[SocketCliente] += response;
+		//cout<<response<<endl;
+
+
+		for(j = 0; j <= fdmax; j++) {
+		// send to everyone
+		    if (FD_ISSET(j, &master)) {
+			//except the listener and ourselves
+			if (j != listener && j != SocketCliente) {
+			    if (send(j, response.c_str(),  strlen(response.c_str()), 0) == -1) {
+				perror("send");
+			    }
+			}
+		    }
+		}
+		
+		flag = 0;
+	}
 
 
 }
@@ -227,8 +230,9 @@ int main(void){
                     } 
                     else
                     {
+			int flag = 1;
                         buf[nbytes] = '\0';
-                        thread (thread_read, buf, i, listener, fdmax, master, files, identificador).detach();
+                        thread (thread_read, buf, i, listener, fdmax, master, files, identificador, flag).detach();
                     }
                 } // END handle data from client
             } // END got new incoming connection
