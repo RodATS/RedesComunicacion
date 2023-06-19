@@ -13,6 +13,7 @@
 #include <map>
 #include <fstream>
 #include <iostream>
+#include <mutex>
 
 using namespace std;
 
@@ -23,12 +24,11 @@ using namespace std;
 
 //--------------------
 
-void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, std::map<int,string> &files, int &identi, std::map<int,int> &clientes) 
+void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, std::map<int,string> &files, int &identi, std::map<int,int> &clientes, mutex &filesMutex, mutex &clientesMutex) 
 {
 	if(clientes[SocketCliente] == 1){
 		
-		std::lock_guard<std::mutex> lockFiles(filesMutex);
-        std::lock_guard<std::mutex> lockClientes(clientesMutex);
+		
 		
 		int nbytes;
 	    int j, count = 0;
@@ -88,7 +88,10 @@ void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &
 		}
 
 		response +="\n";
-
+		// Bloquear el acceso a los mapas
+		lock_guard<mutex> lockFiles(filesMutex);
+		lock_guard<mutex> lockClientes(clientesMutex);
+		
 		files[SocketCliente] += response;
 		//cout<<response<<endl;
 
@@ -249,7 +252,7 @@ int main(void){
 				buf[nbytes] = '\0';
 				//thread (thread_read, buf, i, listener, fdmax, master, files, identificador, clientes).detach();
 				    
-				 std::thread(thread_read, buf, i, listener, fdmax, std::ref(master), std::ref(files), std::ref(identificador), std::ref(clientes)).detach();
+				 std::thread(thread_read, buf, i, listener, fdmax, std::ref(master), std::ref(files), std::ref(identificador), std::ref(clientes), filesMutex, clientesMutex).detach();
 
 			    }
 			} // END handle data from client
