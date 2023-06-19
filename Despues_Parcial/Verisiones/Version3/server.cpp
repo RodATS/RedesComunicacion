@@ -213,7 +213,7 @@ int main(void){
                         remoteIP, INET6_ADDRSTRLEN),
                         newfd);
 			    clientes.insert({i, 0});
-				files.insert({i,"")};
+				files.insert({i,""});
 
                     }
                 }
@@ -225,7 +225,7 @@ int main(void){
                             // connection closed
                             printf("selectserver: socket %d hung up\n", i);
 			    clientes.erase({i});
-				files.erase({i)};
+				files.erase({i});
                         } 
                         else {
                             perror("recv");
