@@ -20,11 +20,14 @@ using namespace std;
 #define PORT "9034" // port we're listening on
 
 //Clientes
-
+map<int,string> files;
+map<int, int> clientes;
+std::mutex filesMutex;
+std::mutex clientesMutex;
 
 //--------------------
 
-void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, std::map<int,string> &files, int &identi, std::map<int,int> &clientes, mutex &filesMutex, mutex &clientesMutex) 
+void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, int &identi) 
 {
 	if(clientes[SocketCliente] == 1){
 		
@@ -132,10 +135,7 @@ int main(void){
 	int fdmax; // maximum file descriptor number
 	int listener; // listening socket descriptor
 	int identificador;
-	map<int,string> files;
-	map<int, int> clientes;
-	std::mutex filesMutex;
-	std::mutex clientesMutex;
+	
 	
 	int newfd; // newly accept()ed socket descriptor
 	struct sockaddr_storage remoteaddr; // client address
@@ -226,6 +226,8 @@ int main(void){
 					newfd);
 					clientes.insert({i, 0});
 					files.insert({i,""});
+					
+				 	std::thread(thread_read, buf, i, listener, fdmax, std::ref(master), std::ref(identificador)).detach();
 
 			    	}
 			}
@@ -252,7 +254,6 @@ int main(void){
 				buf[nbytes] = '\0';
 				//thread (thread_read, buf, i, listener, fdmax, master, files, identificador, clientes).detach();
 				    
-				 std::thread(thread_read, buf, i, listener, fdmax, std::ref(master), std::ref(files), std::ref(identificador), std::ref(clientes), ref(filesMutex), ref(clientesMutex)).detach();
 
 			    }
 			} // END handle data from client
