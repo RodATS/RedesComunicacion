@@ -127,6 +127,7 @@ int main(void){
 	int listener; // listening socket descriptor
 	int identificador;
 	map<int,string> files;
+	map<int, int> clientes;
 	int newfd; // newly accept()ed socket descriptor
 	struct sockaddr_storage remoteaddr; // client address
 	socklen_t addrlen;
@@ -211,6 +212,8 @@ int main(void){
                         get_in_addr((struct sockaddr*)&remoteaddr),
                         remoteIP, INET6_ADDRSTRLEN),
                         newfd);
+			    clientes.insert({i, i});
+				files.insert({i,"")};
 
                     }
                 }
@@ -221,6 +224,8 @@ int main(void){
                         if (nbytes == 0) {
                             // connection closed
                             printf("selectserver: socket %d hung up\n", i);
+			    clientes.erase({i});
+				files.erase({i)};
                         } 
                         else {
                             perror("recv");
