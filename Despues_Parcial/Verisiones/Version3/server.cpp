@@ -148,9 +148,10 @@ int main(void){
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 	if ((rv = getaddrinfo(NULL, PORT, &hints, &ai)) != 0) {
-        fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
-        exit(1);
+		fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
+		exit(1);
 	}
+	//---------------------------------------
 	for(p = ai; p != NULL; p = p->ai_next) {
 		listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
 		if (listener < 0) {
@@ -164,17 +165,18 @@ int main(void){
 		}
 		break;
 	}
+	
 	// if we got here, it means we didn't get bound
 	if (p == NULL) {
-        fprintf(stderr, "selectserver: failed to bind\n");
-        exit(2);
+		fprintf(stderr, "selectserver: failed to bind\n");
+		exit(2);
 	}
 	freeaddrinfo(ai); // all done with this
 
 	// listen----------------------------------
 	if (listen(listener, 10) == -1) {
-        perror("listen");
-        exit(3);
+		perror("listen");
+		exit(3);
 	}
 	// add the listener to the master set
 	FD_SET(listener, &master);
@@ -183,78 +185,79 @@ int main(void){
 	fdmax = listener; // so far, it's this one
 	// main loop
 	for(;;) {
-        read_fds = master; // copy it
-        if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) {
-            perror("select");
-            exit(4);
-        }
-        // run through the existing connections looking for data to read
-        for(i = 0; i <= fdmax; i++) {
-            if (FD_ISSET(i, &read_fds)) 
-            { // we got one!!
-                if (i == listener) {
-                    // handle new connections
-                    addrlen = sizeof remoteaddr;
-                    newfd = accept(listener,
-                    (struct sockaddr *)&remoteaddr,
-                    &addrlen);
-                    if (newfd == -1) {
-                    perror("accept");
-                    } else {
-                        FD_SET(newfd, &master); // add to master set
-                        if (newfd > fdmax) { // keep track of the max
-                            fdmax = newfd;
-                        }
-                        //Nueva conexion-----------------------------
-                        printf("selectserver: new connection from %s on "
-                        "socket %d\n",
-                        inet_ntop(remoteaddr.ss_family,
-                        get_in_addr((struct sockaddr*)&remoteaddr),
-                        remoteIP, INET6_ADDRSTRLEN),
-                        newfd);
-			    clientes.insert({i, 0});
-				files.insert({i,""});
+		read_fds = master; // copy it
+		if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) {
+		    perror("select");
+		    exit(4);
+        	}
+		// run through the existing connections looking for data to read
+		for(i = 0; i <= fdmax; i++) {
+		    if (FD_ISSET(i, &read_fds)) 
+		    { // we got one!!
+			if (i == listener) {
+			    // handle new connections
+			    addrlen = sizeof remoteaddr;
+			    newfd = accept(listener,
+			    (struct sockaddr *)&remoteaddr,
+			    &addrlen);
+			   	if (newfd == -1) {
+				    perror("accept");
+				}
+				else {
+					FD_SET(newfd, &master); // add to master set
+					if (newfd > fdmax) { // keep track of the max
+					    fdmax = newfd;
+					}
+					//Nueva conexion-----------------------------
+					printf("selectserver: new connection from %s on "
+					"socket %d\n",
+					inet_ntop(remoteaddr.ss_family,
+					get_in_addr((struct sockaddr*)&remoteaddr),
+					remoteIP, INET6_ADDRSTRLEN),
+					newfd);
+					clientes.insert({i, 0});
+					files.insert({i,""});
 
-                    }
-                }
-                else 
-                {
-                    if ((nbytes = recv(i, buf, 200 , 0)) <= 0) {
-                        // got error or connection closed by client
-                        if (nbytes == 0) {
-                            // connection closed
-                            printf("selectserver: socket %d hung up\n", i);
-			    clientes.erase({i});
-				files.erase({i});
-                        } 
-                        else {
-                            perror("recv");
-                        }
-                        close(i); // bye!
-                        FD_CLR(i, &master); // remove from master set
-                    } 
-                    else
-                    {
-			 //hacer que cada socket tenga un flag
-			clientes[i] = 1;
-                        buf[nbytes] = '\0';
-                        thread (thread_read, buf, i, listener, fdmax, master, files, identificador, clientes).detach();
-                    }
-                } // END handle data from client
-            } // END got new incoming connection
-            
-            string nombreArchivo = "archivoData_";
-            nombreArchivo+=to_string(identificador);
-            nombreArchivo+=".txt";
-            ofstream archivo;
-            // Abrimos el archivo
-            archivo.open(nombreArchivo.c_str(), fstream::out);
-            // Y le escribimos redirigiendo
-            archivo << files[i];
-            // Finalmente lo cerramos
-            archivo.close();
-            
-        } // END looping through file descriptors
+			    	}
+			}
+			else 
+			{
+			    if ((nbytes = recv(i, buf, 200 , 0)) <= 0) {
+				// got error or connection closed by client
+				if (nbytes == 0) {
+				    // connection closed
+				    printf("selectserver: socket %d hung up\n", i);
+				    clientes.erase({i});
+					files.erase({i});
+				} 
+				else {
+				    perror("recv");
+				}
+				close(i); // bye!
+				FD_CLR(i, &master); // remove from master set
+			    } 
+			    else
+			    {
+				 //hacer que cada socket tenga un flag
+				clientes[i] = 1;
+				buf[nbytes] = '\0';
+				thread (thread_read, buf, i, listener, fdmax, master, files, identificador, clientes).detach();
+			    }
+			} // END handle data from client
+		    } // END got new incoming connection
+
+		    string nombreArchivo = "archivoData_";
+		    nombreArchivo+=to_string(identificador);
+		    nombreArchivo+=".txt";
+		    ofstream archivo;
+		    // Abrimos el archivo
+		    archivo.open(nombreArchivo.c_str(), fstream::out);
+		    // Y le escribimos redirigiendo
+		    archivo << files[i];
+		    // Finalmente lo cerramos
+		    archivo.close();
+
+		} // END looping through file descriptors
 	} // END for(;;)--and you thought it would never end!
 	return 0;
 }
