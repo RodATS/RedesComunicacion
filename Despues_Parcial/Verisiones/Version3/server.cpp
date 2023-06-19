@@ -26,7 +26,7 @@ map<int, string> sockets;
 
 void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, map<int,string> &files, int &identi, map<int,int> clientes) 
 {
-	if(clientes[i] == 1){
+	if(clientes[SocketCliente] == 1){
 		int nbytes;
 	    int j, count = 0;
 	    string response;
@@ -102,7 +102,7 @@ void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &
 		    }
 		}
 		
-		clientes[i] = 0;
+		clientes[SocketCliente] = 0;
 	}
 
 
