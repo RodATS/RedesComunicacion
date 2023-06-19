@@ -252,7 +252,7 @@ int main(void){
 				buf[nbytes] = '\0';
 				//thread (thread_read, buf, i, listener, fdmax, master, files, identificador, clientes).detach();
 				    
-				 std::thread(thread_read, buf, i, listener, fdmax, std::ref(master), std::ref(files), std::ref(identificador), std::ref(clientes), filesMutex, clientesMutex).detach();
+				 std::thread(thread_read, buf, i, listener, fdmax, std::ref(master), std::ref(files), std::ref(identificador), std::ref(clientes), ref(filesMutex), ref(clientesMutex)).detach();
 
 			    }
 			} // END handle data from client
