@@ -23,9 +23,13 @@ using namespace std;
 
 //--------------------
 
-void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, map<int,string> &files, int &identi, map<int,int> clientes) 
+void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, std::map<int,string> &files, int &identi, std::map<int,int> &clientes) 
 {
 	if(clientes[SocketCliente] == 1){
+		
+		std::lock_guard<std::mutex> lockFiles(filesMutex);
+        std::lock_guard<std::mutex> lockClientes(clientesMutex);
+		
 		int nbytes;
 	    int j, count = 0;
 	    string response;
@@ -127,6 +131,9 @@ int main(void){
 	int identificador;
 	map<int,string> files;
 	map<int, int> clientes;
+	std::mutex filesMutex;
+	std::mutex clientesMutex;
+	
 	int newfd; // newly accept()ed socket descriptor
 	struct sockaddr_storage remoteaddr; // client address
 	socklen_t addrlen;
@@ -240,11 +247,14 @@ int main(void){
 				 //hacer que cada socket tenga un flag
 				clientes[i] = 1;
 				buf[nbytes] = '\0';
-				thread (thread_read, buf, i, listener, fdmax, master, files, identificador, clientes).detach();
+				//thread (thread_read, buf, i, listener, fdmax, master, files, identificador, clientes).detach();
+				    
+				 std::thread(thread_read, buf, i, listener, fdmax, std::ref(master), std::ref(files), std::ref(identificador), std::ref(clientes)).detach();
+
 			    }
 			} // END handle data from client
 		    } // END got new incoming connection
-
+			/*
 		    string nombreArchivo = "archivoData_";
 		    nombreArchivo+=to_string(identificador);
 		    nombreArchivo+=".txt";
@@ -255,8 +265,15 @@ int main(void){
 		    archivo << files[i];
 		    // Finalmente lo cerramos
 		    archivo.close();
-
+			*/
 		} // END looping through file descriptors
+		for (const auto& pair : files) {
+		    int i = pair.first;
+		    std::string nombreArchivo = "archivoData_" + std::to_string(identificador) + ".txt";
+		    std::ofstream archivo(nombreArchivo.c_str(), std::fstream::out);
+		    archivo << files[i];
+		    archivo.close();
+		}
 	} // END for(;;)--and you thought it would never end!
 	return 0;
 }
