@@ -24,9 +24,9 @@ map<int, string> sockets;
 
 //--------------------
 
-void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, map<int,string> &files, int &identi, int &flag) 
+void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &master, map<int,string> &files, int &identi, map<int,int> clientes) 
 {
-	if(flag == 1){
+	if(clientes[i] == 1){
 		int nbytes;
 	    int j, count = 0;
 	    string response;
@@ -102,7 +102,7 @@ void thread_read(char *buf, int SocketCliente, int listener, int fdmax, fd_set &
 		    }
 		}
 		
-		flag = 0;
+		clientes[i] = 0;
 	}
 
 
@@ -212,7 +212,7 @@ int main(void){
                         get_in_addr((struct sockaddr*)&remoteaddr),
                         remoteIP, INET6_ADDRSTRLEN),
                         newfd);
-			    clientes.insert({i, i});
+			    clientes.insert({i, 0});
 				files.insert({i,"")};
 
                     }
@@ -236,9 +236,9 @@ int main(void){
                     else
                     {
 			 //hacer que cada socket tenga un flag
-			int flag = 1;
+			clientes[i] = 1;
                         buf[nbytes] = '\0';
-                        thread (thread_read, buf, i, listener, fdmax, master, files, identificador, flag).detach();
+                        thread (thread_read, buf, i, listener, fdmax, master, files, identificador, clientes).detach();
                     }
                 } // END handle data from client
             } // END got new incoming connection
