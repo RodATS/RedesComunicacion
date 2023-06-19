@@ -20,7 +20,6 @@ using namespace std;
 
 //Clientes
 
-map<int, string> sockets;
 
 //--------------------
 
