@@ -21,7 +21,7 @@ void writetoFile(string campo, string data, string file);
 int main(int argc, char* argv[])
 {
     int port;
-    port = (argc > 1) ? std::stoi(argv[1]) : 45000;
+    port = (argc > 1) ? std::stoi(argv[1]) : 9034;
     struct sockaddr_in stSockAddr;
     int Res;
     int SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP); //Es TCP
@@ -85,6 +85,7 @@ int main(int argc, char* argv[])
                 char* data = new char[dSize+1];
                 n = recv(SocketFD,data,dSize,0);
                 data[dSize] = '\0';
+                cout<<string(campo)<<string(data)<<endl;
                 writetoFile(string(campo),string(data),"file.txt");
                 n = recv(SocketFD,buff,1,0); //leer el '\n'
             }
