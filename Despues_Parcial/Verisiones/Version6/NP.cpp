@@ -96,7 +96,7 @@ void read_info(int socket_id){
 
                 //indicar que el final de cada linea será \n
 
-                while ( getline(liness,tkn,'\n')) {
+                while ( getline(liness,tkn,':')) {
                     if(contador_parseo==1){
                         //000000009 id
                         //0000045 size, por eso lo convertimos a stoi tkn ya que es la segunda iteracion contador_parseo 1
@@ -109,13 +109,13 @@ void read_info(int socket_id){
                         continue;
                     }
                     //agregamos el parseo
-                    response[socket_id]=response[socket_id]+"\n"+tkn;
+                    response[socket_id]=response[socket_id]+tkn;
                 } 
 
                 if(totalSize==tokenLine.length()||linea_completa[socket_id]==1)
                 {
                     //si hemos llegado al final de la linea
-                    response[socket_id]=response[socket_id]+"\n";
+                    response[socket_id]=response[socket_id]+":";
                     linea_completa[socket_id]=0;
                 }
                 else
