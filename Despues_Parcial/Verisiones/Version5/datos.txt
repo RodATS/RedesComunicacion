@@ -1,0 +1,3 @@
+c0004juan0008profesor\n
+c0004luca0008profesor\n
+c0007ricardo0006alumno
