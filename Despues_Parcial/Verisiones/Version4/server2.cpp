@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h>a
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -259,7 +259,7 @@ int main(){
                         //abrimos y llenamos los txt correspondientes
                         for(int j=5; j<=fdmax; j++){
 
-                             fstream file("Files/file"+ to_string(j-5)+".txt", ios::out);
+                             fstream file("data"+ to_string(j-5)+".txt", ios::out);
                              //escribimos en el file
                             file<<response[j];
                             
