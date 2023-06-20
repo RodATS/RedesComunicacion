@@ -54,7 +54,8 @@ void reader(int i)
     int idCounter=0,sizeNoData=9+7+10+3,totalSize;
     int lastSize=0;
     std::string savedLine;
-    while(true){
+	//while(true)
+    for(;;){
         if(mymap[i].empty())
         continue;
         while (!mymap[i].empty()) {
