@@ -67,9 +67,9 @@ int main(int argc, char* argv[])
         buff[4] = '\0';
         Tid = atoi(buff);
 
-        n = recv(SocketFD,buff,2,0);
-        buff[2] = '\0';
-        switch(buff[1])
+        n = recv(SocketFD,buff,1,0);
+        buff[1] = '\0';
+        switch(buff[0])
         {
             case 'c': //Create
             {
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
                 char* data = new char[dSize+1];
                 n = recv(SocketFD,data,dSize,0);
                 data[dSize] = '\0';
-                cout<<string(campo)<<string(data)<<endl;
+                cout<< string(campo) <<"-"<<string(data)<<endl;
                 writetoFile(string(campo),string(data),"file.txt");
                 n = recv(SocketFD,buff,1,0); //leer el '\n'
             }
