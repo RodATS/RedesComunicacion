@@ -148,7 +148,7 @@ int main(void){
                  nbytes = recv(i, buf, 3 , 0);
                 buf[nbytes] = '\0';
                 response += buf;
-                int tam = atoi(buf); 
+                tam = atoi(buf); 
                 nbytes = recv(i, buf, tam , 0);
                 buf[nbytes] = '\0';
                 response+=buf;
