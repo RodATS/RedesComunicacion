@@ -41,6 +41,8 @@ int main(int argc, char* argv[])
 
     cout<<"Enviaste: "<<envioFinal<<endl;
 
+    int n;
+    char buffer[256];
     int saberLlego = -1;
     int port;
     port = 9034; // Puerto del cliente
