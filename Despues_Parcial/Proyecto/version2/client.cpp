@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 
     string envioFinal = parametro1 + parametro2 + agregarCeros(parametro3.size()) + parametro3 + to_string(parametro4.size()) + parametro4;
 
-    cout<<parametro1<<" - " << parametro2 << " - "<< parametro3 << " - " << parametro4<<endl;
+    cout<<envioFinal<<endl;
     int port;
     port = 9034; // Puerto del cliente
     struct sockaddr_in stSockAddr;
