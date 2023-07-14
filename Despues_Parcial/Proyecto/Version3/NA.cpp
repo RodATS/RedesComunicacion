@@ -125,14 +125,18 @@ int main(int argc, char* argv[])
     for(;;)
     {
         //-----------------ID--TRANSACCION-----------------
-        
-        n = recv(SocketFD,buff,6,0);
-        buff[6] = '\0';
+        memset(buff, 0, 1000);
+
+        //creo que seria 11 en vez de 10, por si no funca
+        n = recv(SocketFD,buff,10,0);
+        buff[n] = '\0';
+        //cout<<"["<<buff<<"]"<<endl;
         Tid = string(buff);
         
         //-------------------------------------------------
         n = recv(SocketFD,buff,1,0);
-        buff[1] = '\0';
+        buff[n] = '\0';
+        //cout<<"buff ini: "<<buff<<endl;
         switch(buff[0])
         {
 
@@ -141,7 +145,7 @@ int main(int argc, char* argv[])
             {
 
                 n = recv(SocketFD,buff,1,0);
-                buff[1] = '\0';
+                buff[n] = '\0';
 
                 switch(buff[0])
                 {
@@ -149,41 +153,39 @@ int main(int argc, char* argv[])
                     {
                         //leer el tamaño de campo
                         n = recv(SocketFD,buff,3,0);
-                        buff[3] = '\0';
+                        buff[n] = '\0';
                         int cSize = atoi(buff);
                         char* campo = new char[cSize+1];
 
                         //leer campo
                         n = recv(SocketFD,campo,cSize,0);
-                        campo[cSize] = '\0';
+                        campo[n] = '\0';
 
                         //leer el tamaño de word
                         n = recv(SocketFD,buff,3,0);
-                        buff[3] = '\0';
+                        buff[n] = '\0';
                         int dSize = atoi(buff);
                         char* data = new char[dSize+1];
 
                         //leer word
                         n = recv(SocketFD,data,dSize,0);
-                        data[dSize] = '\0';
-                        cout<< string(campo) <<"-"<<string(data)<<endl;
+                        data[n] = '\0';
 
                         //agrega
                         BD_word[string(campo)].push_back(string(data));
-                        cout<<string(campo)<<endl; cout<<BD_word[string(campo)][0]<<endl;
-                        cout<<"Se agrego un word\n";
-
+                        //cout<<string(campo)<<endl; cout<<BD_word[string(campo)][0]<<endl;
+                        cout<<"Se agrego un word: "<< string(campo) <<" - "<<string(data)<<endl;
                         
-                        
-
                         //mensaje de retorno-----------------
                         string mensajeRetorno = "Se agrego un word";
                         char userBuffSize[5];
-                        sprintf(userBuffSize, "%04d", mensajeRetorno.length());
+                        sprintf(userBuffSize, "%04lu", mensajeRetorno.length());
                         string response = Tid;
                         response += string(userBuffSize);
                         response += mensajeRetorno;
 
+                        //cout<<response<<endl;
+                        
                         send(SocketFD, response.c_str(), response.length(),0);
 
                         
@@ -211,29 +213,27 @@ int main(int argc, char* argv[])
                         //leer glosario
                         n = recv(SocketFD,data,dSize,0);
                         data[dSize] = '\0';
-                        cout<< string(campo) <<"-"<<string(data)<<endl;
 
                         //agrega
                         BD_glosario[string(campo)].push_back(string(data));
-                        cout<<string(campo)<<endl; cout<<BD_glosario[string(campo)][0]<<endl;
-                        cout<<"Se agrego un glosario\n";
-
+                        //cout<<string(campo)<<endl; cout<<BD_glosario[string(campo)][0]<<endl;
+                        cout<<"Se agrego el glosario: "<< string(campo) <<"-"<<string(data)<<endl;
 
                         //mensaje de retorno-----------------
                         string mensajeRetorno = "Se agrego un glosario";
                         char userBuffSize[5];
-                        sprintf(userBuffSize, "%04d", mensajeRetorno.length());
+                        sprintf(userBuffSize, "%04lu", mensajeRetorno.length());
                         string response = Tid;
                         response += string(userBuffSize);
                         response += mensajeRetorno;
 
                         send(SocketFD, response.c_str(), response.length(),0);
 
-
                         break;
                     }
 
                 }
+                break;
             }
             //------------------------------END-CREATE----------------------------------------
 
@@ -247,82 +247,102 @@ int main(int argc, char* argv[])
                 {
                     
 
-                        case 'w': //leer un BD word
+                    case 'w': //leer un BD word
+                    {
+                        cout<<"enviaron un read para word"<<endl;
+                        //tamaño campo
+                        n = recv(SocketFD,buff,3,0); //Csize
+                        buff[3] = '\0';
+                        int cSize = atoi(buff);
+                        char* campo = new char[cSize+1];
+
+                        //nombre campo
+                        n = recv(SocketFD,campo,cSize,0); //Campo
+                        campo[cSize] = '\0';
+                        vector<string>resultados;
+
+                        string c(campo);
+                        cout<<"campoStr: "<<c<<endl;
+                        
+                        cout<<"Buscare"<<endl;
+                        if(BD_word.count(c) > 0)
                         {
-                            //tamaño campo
-                            n = recv(SocketFD,buff,3,0);
-                            buff[3] = '\0';
-                            int cSize = atoi(buff);
-                            char* campo = new char[cSize+1];
-
-                            //nombre campo
-                            n = recv(SocketFD,campo,cSize,0);
-                            campo[cSize] = '\0';
-                            vector<string>resultados;
-                            
-                            if(BD_word.find(string(campo)) != BD_word.end())
-                            {
-                                resultados = BD_word[string(campo)];
-                            }else{
-                                std::cout<<"No encontrado\n";
-                            }
-
+                            cout<<"encontró "<<c<<endl;
+                            resultados = BD_word[c];
                             //chancar el primer elemento del vector ya que sse mandará ese
+
+                            cout<<"ntro al bucle"<<endl;
                             for(int i = 1; i < resultados.size(); i++)
                             {
-                                resultados[0]+=resultados[i];
+                                resultados[0]+= "-" + resultados[i];
                             }
 
-
+                        }else{
+                            std::cout<<"No encontrado\n";
+                            //break;
+                            resultados.push_back("[No encontrado]"); 
                             
-                            //solo devuelve words
-                            char userBuffSize[5];
-                            sprintf(userBuffSize, "%04d", resultados[0].length());
-                            string response = Tid;
-                            response += string(userBuffSize);
-                            response += resultados[0];
-
-                            send(SocketFD, response.c_str(), response.length(),0);
-
-                            break;
                         }
 
-                        case 'g': //leer un BD g
+
+                        
+                        //solo devuelve words
+                        char userBuffSize[5];
+                        sprintf(userBuffSize, "%04lu", resultados[0].length());
+                        string response = Tid;
+                        response[1] = 'r';
+                        response += string(userBuffSize);
+                        response += resultados[0];
+                        cout<<"le mande esta lista: "<<resultados[0]<<endl;
+                        cout<<"le mande este mensaje al NP: "<<response<<endl;
+                        send(SocketFD, response.c_str(), response.length(),0);
+                        
+                        break;
+                    }
+
+                    case 'g': //leer un BD g
+                    {
+                        //tamaño campo
+                        
+                        cout<<"enviaron un read para glosario"<<endl;
+                        n = recv(SocketFD,buff,3,0);
+                        buff[3] = '\0';
+                        int cSize = atoi(buff);
+                        char* campo = new char[cSize+1];
+
+                        //nombre campo
+                        n = recv(SocketFD,campo,cSize,0);
+                        campo[cSize] = '\0';
+
+                        //obtener glosario
+                        vector<string>resultados;
+                        if(BD_glosario.find(string(campo)) != BD_glosario.end())
                         {
-                            //tamaño campo
-                            n = recv(SocketFD,buff,3,0);
-                            buff[3] = '\0';
-                            int cSize = atoi(buff);
-                            char* campo = new char[cSize+1];
-
-                            //nombre campo
-                            n = recv(SocketFD,campo,cSize,0);
-                            campo[cSize] = '\0';
-
-                            //obtener glosario
-                            vector<string>resultados;
-                            if(BD_glosario.find(string(campo)) != BD_glosario.end())
-                            {
-                                resultados = BD_glosario[string(campo)];
-                            }else{
-                                std::cout<<"No encontrado\n";
-                            }
+                            resultados = BD_glosario[string(campo)];
                             for(int i = 1; i < resultados.size(); i++)
                             {
-                                resultados[0]+=resultados[i];
+                                resultados[0]+= "-" + resultados[i];
                             }
-
-                            //solo devuelve el glosario
-                            char userBuffSize[5];
-                            sprintf(userBuffSize, "%04d", resultados[0].length());
-                            string response = Tid;
-                            response += string(userBuffSize);
-                            response += resultados[0];
-
-                            send(SocketFD, response.c_str(), response.length(),0);
-
-                            break;
+                        }else{
+                            std::cout<<"No encontrado\n";
+                            //break;
+                            resultados.push_back("[No encontrado]"); 
                         }
+                        
+
+                        //solo devuelve el glosario
+                        char userBuffSize[5];
+                        sprintf(userBuffSize, "%04lu", resultados[0].length());
+                        string response = Tid;
+                        response += string(userBuffSize);
+                        response += resultados[0];
+                        
+                        cout<<"le mande esta lista: "<<resultados[0]<<endl;
+                        cout<<"le mande este mensaje al NP: "<<response<<endl;
+                        send(SocketFD, response.c_str(), response.length(),0);
+
+                        break;
+                    }
 
 
                     }
@@ -351,7 +371,7 @@ int main(int argc, char* argv[])
                     }
 
                     */
-
+                break;
             }
              
             
@@ -404,7 +424,7 @@ int main(int argc, char* argv[])
                         //mensaje de retorno-----------------
                         string mensajeRetorno = "Se actualizo un word";
                         char userBuffSize[5];
-                        sprintf(userBuffSize, "%04d", mensajeRetorno.length());
+                        sprintf(userBuffSize, "%04lu", mensajeRetorno.length());
                         string response = Tid;
                         response += string(userBuffSize);
                         response += mensajeRetorno;
@@ -451,7 +471,7 @@ int main(int argc, char* argv[])
                         //mensaje de retorno-----------------
                         string mensajeRetorno = "Se actualizo un glosario";
                         char userBuffSize[5];
-                        sprintf(userBuffSize, "%04d", mensajeRetorno.length());
+                        sprintf(userBuffSize, "%04lu", mensajeRetorno.length());
                         string response = Tid;
                         response += string(userBuffSize);
                         response += mensajeRetorno;
@@ -462,6 +482,7 @@ int main(int argc, char* argv[])
                     }
 
                 }
+                break;
             }
 
             //----------------------------END-UPDATE--------------------------
@@ -504,8 +525,10 @@ int main(int argc, char* argv[])
 
                         //mensaje de retorno-----------------
                         string mensajeRetorno = "Se elimino un word";
+
+                        cout<<mensajeRetorno<<endl;
                         char userBuffSize[5];
-                        sprintf(userBuffSize, "%04d", mensajeRetorno.length());
+                        sprintf(userBuffSize, "%04lu", mensajeRetorno.length());
                         string response = Tid;
                         response += string(userBuffSize);
                         response += mensajeRetorno;
@@ -543,7 +566,7 @@ int main(int argc, char* argv[])
                         //mensaje de retorno-----------------
                         string mensajeRetorno = "Se elimino un glosario";
                         char userBuffSize[5];
-                        sprintf(userBuffSize, "%04d", mensajeRetorno.length());
+                        sprintf(userBuffSize, "%04lu", mensajeRetorno.length());
                         string response = Tid;
                         response += string(userBuffSize);
                         response += mensajeRetorno;
@@ -552,6 +575,7 @@ int main(int argc, char* argv[])
                         break;
                     }
                 }
+                break;
             }
 
             //-----------------------------END-DELETE-------------------------
