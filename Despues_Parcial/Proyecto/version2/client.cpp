@@ -23,6 +23,12 @@ using namespace std;
 
 void thread_read(int socketC);
 
+std::string agregarCeros(int longitud) {
+    char userBuffSize[4];
+    sprintf(userBuffSize, "%03d", longitud);
+    return std::string(userBuffSize);
+}
+
 //ejecucion cliente.exe c (w/g) nombre juan
 int main(int argc, char* argv[])
 {
@@ -32,7 +38,8 @@ int main(int argc, char* argv[])
     string parametro3 (argv[3]); //campo
     string parametro4 (argv[4]); //word o glosario
 
-    string envioFinal = parametro1 + parametro2 + to_string(parametro3.size()) + parametro3 + to_string(parametro4.size()) + parametro4;
+
+    string envioFinal = parametro1 + parametro2 + agregarCeros(parametro3.size()) + parametro3 + to_string(parametro4.size()) + parametro4;
 
     cout<<parametro1<<" - " << parametro2 << " - "<< parametro3 << " - " << parametro4<<endl;
     int port;
@@ -201,4 +208,3 @@ void thread_read(int socketC)
 
 }
 */
-
