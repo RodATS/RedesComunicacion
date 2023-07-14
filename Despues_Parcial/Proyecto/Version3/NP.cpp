@@ -121,7 +121,7 @@ int main(void){
 
 
     /*Configuración socket cliente*/
-/*
+
     int client_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (-1 == client_socket)
     {
@@ -148,7 +148,7 @@ int main(void){
     {
         fdmax = client_socket;
     }
-*/
+
 
 	// main loop
     for(;;) 
