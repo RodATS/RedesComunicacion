@@ -242,6 +242,16 @@ int main(void){
                             transacciones[i] = transaccionID; // identificar la transaccion con el cliente correspondiente
                             transaccionID++;
                             */
+
+                           response += "tt";
+                            char userBuffSize[5];
+                            sprintf(userBuffSize, "%04d", transaccionID);
+                            response += string(userBuffSize);
+
+
+
+                            transacciones[i] = transaccionID; // identificar la transaccion con el cliente correspondiente
+                            transaccionID++;
                             response += buf;
                             nbytes = recv(i, buf, 3 , 0);
                             buf[nbytes] = '\0';
@@ -367,7 +377,7 @@ int main(void){
                             }else{
                                 perror("bad Tid");
                             }
-                            
+
 
                             nbytes = recv(i, buf, 5 , 0); // tamaño del vector resultante de campos o datos
                             buf[nbytes] = '\0';
