@@ -31,21 +31,19 @@ std::string agregarCeros(int longitud) {
 int main(int argc, char* argv[])
 {
     string parametro1 (argv[1]); //comando: c r u d
-    
     string parametro2 (argv[2]); //word or glosario
     string parametro3 (argv[3]); //campo
     string parametro4 (argv[4]); //word o glosario
 
-
-    string envioFinal = parametro1 + parametro2 + agregarCeros(parametro3.size()) + parametro3 + agregarCeros(parametro4.size())+ parametro4;
-
-    cout<<"Enviaste: "<<envioFinal<<endl;
+    //para el caso del update
+    string parametro5 (argv[5]); // nuevo word o glosario
 
     int n;
-    char buffer[256];
+    char buffer[10000];
     int saberLlego = -1;
+    int saberLlegoRead = 0;
     int port;
-    port = 9034; // Puerto del cliente
+    port = 9036; // Puerto del cliente
     struct sockaddr_in stSockAddr;
     int Res;
     int SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP); // Es TCP
@@ -80,31 +78,88 @@ int main(int argc, char* argv[])
     }
 
     
-    //--------aca--------
-    /*
-    for(;;)
-    {
-        
-    }
-    */
+
     //-------------------------
-    
-    send(SocketFD, envioFinal.c_str(), envioFinal.size(),0);
-
-     do{
-      
-
-        //n = write(SocketFD,"Hi, this is Julio.",18);
-        bzero(buffer,256);
-        n = read(SocketFD,buffer,255); //bytes leidos
-        printf("Here is the message: [%s]\n",buffer);
-        
-        saberLlego = 1;
-    }
+    if(string(argv[1]) == "c"){
+        string envioFinal = parametro1 + parametro2 + agregarCeros(parametro3.size()) + parametro3 + agregarCeros(parametro4.size())+ parametro4;
+        cout<<"Enviaste: "<<envioFinal<<endl;
+        send(SocketFD, envioFinal.c_str(), envioFinal.size(),0);
+        do{
+            //n = write(SocketFD,"Hi, this is Julio.",18);
+            bzero(buffer,10000);
+            n = recv(SocketFD,buffer,17,0); //bytes leidos
+            printf("Here is the message: [%s]\n",buffer);
+            
+            saberLlego = 1;
+        }
         while(saberLlego != 1);
+    }
+    else if(string(argv[1])=="r"){
+        
+        string envioFinal = parametro1 + parametro2 + agregarCeros(parametro3.size()) + parametro3;
+        
+        send(SocketFD, envioFinal.c_str(), envioFinal.size(),0);
+        cout<<"Enviaste: "<<envioFinal<<endl;
+        do{
+            
+            n = recv(SocketFD,buffer,1,0);
+            buffer[n] = '\0';
+            cout<<"["<<buffer<<"]\n";
+            if(buffer[0] == 'r') cout<<"Recibiendo respuestas...\n";
+            n = recv(SocketFD, buffer, 4, 0);
+            buffer[n] = '\0';
+            cout<<"["<<buffer<<"]\n";
+            int size = atoi(buffer);
+            n = recv(SocketFD, buffer, size, 0);
+            buffer[n] = '\0';
+            cout<<"["<<buffer<<"]\n";
+            printf("Respuesta: [%s]\n",buffer);
 
+            saberLlegoRead++;
+        }
+        while(saberLlegoRead < 4);
+        
+    }
+    else if(string(argv[1])=="d"){
+        string envioFinal = parametro1 + parametro2 + agregarCeros(parametro3.size()) + parametro3 + agregarCeros(parametro4.size())+ parametro4;
+        cout<<"Enviaste: "<<envioFinal<<endl;
+        
+        send(SocketFD, envioFinal.c_str(), envioFinal.size(),0);
+        do{
+            //n = write(SocketFD,"Hi, this is Julio.",18);
+            bzero(buffer,10000);
+            n = recv(SocketFD,buffer,17,0); //bytes leidos
+            printf("Here is the message: [%s]\n",buffer);
+            
+            saberLlego = 1;
+        }
+        while(saberLlego != 1);
+    }
+    //update
+   else if(string(argv[1])=="u"){
+
+        //string parametro5="Nuevo valor";  
+        string envioFinal = parametro1 + parametro2+ agregarCeros(parametro3.size())+ parametro3 + agregarCeros(parametro4.size()) + parametro4 + agregarCeros(parametro5.size()) + parametro5  ;
+        cout<<"Enviaste: "<<envioFinal<<endl;
+        send(SocketFD, envioFinal.c_str(),envioFinal.size(),0);
+        do{
+            bzero(buffer,10000);
+            n=recv(SocketFD, buffer,17,0);
+            printf("Here is the message: [%s]\n", buffer);
+            saberLlego=1;
+          
+    }  while(saberLlego!=1);
+
+   }
+
+
+    
+    
+
+        //--------aca--------
     shutdown(SocketFD, SHUT_RDWR);
     close(SocketFD);
     return 0;
 }
+
 
