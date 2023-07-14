@@ -20,12 +20,19 @@
 
 using namespace std;
 
-#define PORT "9034" // port we're listening on
-#define PORT_CLIENT "9036" //puerto para los NA
+#define PORT "9034" // Puerto para los NA
+#define PORT_CLIENT "9036" //puerto para el cliente
 
 map<int,  queue<char *>> socket_info; //un buffer para cada socket
+
+
 map<int,string> files;
-map<int, int> transacciones;// cada socket relacionado a una transacción para la devolucion ID del cliente 
+map<int, int> transacciones;// cada socket relacionado a una transacción para la devolucion ID del cliente
+map<int, vector<int>> transaccionNA; //cada NA se relaciona con una transaccion y para la devolucion saber quien tenia la info
+
+hash<string> myhash;
+int count_word = 0;
+int count_glos = 0;
 
 void read_pass(int id){
 
@@ -71,7 +78,7 @@ int main(void){
 	char remoteIP[INET6_ADDRSTRLEN];
 	int yes=1; // for setsockopt() SO_REUSEADDR, below
 	int i, j, rv,transaccionID=0;
-	string response;
+	//string response;
 	struct addrinfo hints, *ai, *p;
 	
 	FD_ZERO(&master); // clear the master and temp sets
@@ -86,8 +93,8 @@ int main(void){
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 	if ((rv = getaddrinfo(NULL, PORT, &hints, &ai)) != 0) {
-	fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
-	exit(1);
+        fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
+        exit(1);
 	}
 	for(p = ai; p != NULL; p = p->ai_next) {
 		listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
@@ -161,277 +168,442 @@ int main(void){
         // run through the existing connections looking for data to read
         for(i = 0; i <= fdmax; i++) 
         {
-            cout<<"de vuelta\n";
             if (FD_ISSET(i, &read_fds)) { // we got one!!
-            if (i == listener) {
-                // handle new connections
-                addrlen = sizeof remoteaddr;
-                newfd = accept(listener,
-                (struct sockaddr *)&remoteaddr,
-                &addrlen);
-                if (newfd == -1) {
-                perror("accept");
-                } else {
-                FD_SET(newfd, &master); // add to master set
-                if (newfd > fdmax) { // keep track of the max
-                fdmax = newfd;
-                }
-                printf("selectserver: new connection from %s on "
-                "socket %d\n",
-                inet_ntop(remoteaddr.ss_family,
-                get_in_addr((struct sockaddr*)&remoteaddr),
-                remoteIP, INET6_ADDRSTRLEN),
-                newfd);
-                files[newfd] = ("");
-                //threads_leer.push_back(thread(read_pass, newfd));
-
-                }
-            }
-            else if(i == client_socket){
-                // Nuevo cliente conectado al servidor principal
+                if (i == listener) { //Nueva conección
                     addrlen = sizeof remoteaddr;
-                    newfd = accept(client_socket, (struct sockaddr*)&remoteaddr, &addrlen);
-                    if (newfd == -1)
-                    {
-                        perror("accept client");
-                    }
-                    else
-                    {
-                        FD_SET(newfd, &master); // Añade al conjunto maestro
-                        if (newfd > fdmax)
-                        {
+                    newfd = accept(listener,(struct sockaddr *)&remoteaddr,&addrlen);
+                    if (newfd == -1) {
+                        perror("accept");
+                    } else {
+                        FD_SET(newfd, &master); // add to master set
+                        if (newfd > fdmax) { // keep track of the max
                             fdmax = newfd;
                         }
-                        printf("Servidor principal: nueva conexión de cliente desde %s en el socket %d\n",
-                            inet_ntop(remoteaddr.ss_family, get_in_addr((struct sockaddr*)&remoteaddr),
-                                remoteIP, INET6_ADDRSTRLEN), newfd);
+                        printf("selectserver: new connection from %s on "
+                        "socket %d\n",
+                        inet_ntop(remoteaddr.ss_family,
+                        get_in_addr((struct sockaddr*)&remoteaddr),
+                        remoteIP, INET6_ADDRSTRLEN),
+                        newfd);
 
-                        cout<<"No se cierra\n";
                         files[newfd] = ("");
-                        cout<<"No se cierra\n";
-                    }
-            }else {
+                        //threads_leer.push_back(thread(read_pass, newfd));
 
-            // handle data from a client
-                // el protocolo c r d u d (w/g)
-                if ((nbytes = recv(i, buf, 2 , 0)) <= 0) {
-                    // got error or connection closed by client
-                    if (nbytes == 0) {
-                    // connection closed
-                    printf("selectserver: socket %d hung up\n", i);
+                    }
+                }
+                else if(i == client_socket){ //Datos de cliente
+                        addrlen = sizeof remoteaddr;
+                        newfd = accept(client_socket, (struct sockaddr*)&remoteaddr, &addrlen);
+                        if (newfd == -1)                   
+                            perror("accept client");                 
+                        else
+                        {
+                            FD_SET(newfd, &master); // Añade al conjunto maestro
+                            if (newfd > fdmax)
+                                fdmax = newfd;
+                            printf("Servidor principal: nueva conexión de cliente desde %s en el socket %d\n",
+                                inet_ntop(remoteaddr.ss_family, get_in_addr((struct sockaddr*)&remoteaddr),
+                                    remoteIP, INET6_ADDRSTRLEN), newfd);                        
+                        }
+                }else {
+                    // handle data
+                    // el protocolo c r u d (w/g)
+                    if ((nbytes = recv(i, buf, 2 , 0)) <= 0) {
+                        if (nbytes == 0) {
+                            // connection closed
+                            printf("selectserver: socket %d hung up\n", i);
+                        } 
+                        else {
+                            perror("recv");
+                        }
+                        close(i); // bye!
+                        FD_CLR(i, &master); // remove from master set
                     } 
                     else {
-                    perror("recv");
-                    }
-                    close(i); // bye!
-                    FD_CLR(i, &master); // remove from master set
-                } 
-                else {
-                // we got some data from a client
-                //esto lo metemos en el thread y reenviamos al NA
-                    //nbytes = recv(i, buf, 1 , 0);
+                        // we got some data from a client
+                        //esto lo metemos en el thread y reenviamos al NA
+                            //nbytes = recv(i, buf, 1 , 0);
 
-                    switch(buf[0]){
-                        case 'c' : //TODO: case cliente -> r al server
-                        {
-                            buf[nbytes] = '\0';
-                    
-                            response = "";
-                            /*
-                            response += "tt000" + to_string(transaccionID);
-                            transacciones[i] = transaccionID; // identificar la transaccion con el cliente correspondiente
-                            transaccionID++;
-                            */
+                        switch(buf[0]){
 
-                           response += "tt";
-                            char userBuffSize[5];
-                            sprintf(userBuffSize, "%04d", transaccionID);
-                            response += string(userBuffSize);
-
-
-
-                            transacciones[i] = transaccionID; // identificar la transaccion con el cliente correspondiente
-                            transaccionID++;
-                            response += buf;
-                            nbytes = recv(i, buf, 3 , 0);
-                            buf[nbytes] = '\0';
-                            response += buf;
-                            int tam = atoi(buf); 
-                            nbytes = recv(i, buf, tam , 0);
-                            buf[nbytes] = '\0';
-                            response+=buf;
-                            nbytes = recv(i, buf, 3 , 0);
-                            buf[nbytes] = '\0';
-                            response += buf;
-                            tam = atoi(buf); 
-                            nbytes = recv(i, buf, tam , 0);
-                            buf[nbytes] = '\0';
-                            response+=buf;
-                            
-                            cout<<"Mensaje: " <<response<<endl;
-                            //aca se activa el thread
-                            files[i] += response;
-
-                            //cout<<response<<endl;
-                            response = "";
-                            break;
-                        }
-
-                        case 'r' : //TODO: case cliente -> r al server
-                        {
-                            buf[nbytes] = '\0';
-                    
-                            response = "";
-
-                            //response += "tt000" + to_string(transaccionID);
-                            response += "tt";
-                            char userBuffSize[5];
-                            sprintf(userBuffSize, "%04d", transaccionID);
-                            response += string(userBuffSize);
-
-
-
-                            transacciones[i] = transaccionID; // identificar la transaccion con el cliente correspondiente
-                            transaccionID++;
-
-                            response += buf;
-                            nbytes = recv(i, buf, 3 , 0);
-                            buf[nbytes] = '\0';
-                            response += buf;
-                            int tam = atoi(buf); 
-                            nbytes = recv(i, buf, tam , 0);
-                            buf[nbytes] = '\0';
-                            response+=buf;
-                            nbytes = recv(i, buf, 3 , 0);
-                            buf[nbytes] = '\0';
-                            response += buf;
-                            tam = atoi(buf); 
-                            nbytes = recv(i, buf, tam , 0);
-                            buf[nbytes] = '\0';
-                            response+=buf;
-                            
-                            //aca se activa el thread
-                            files[i] += response;
-
-                            //cout<<response<<endl;
-                            response = "";
-                            break;
-                        }
-
-
-                        case 'u':
-                        {
-                            buf[nbytes] = '\0';
-                    
-                            response = "";
-                            
-                            //response += "tt000" + to_string(transaccionID);
-                            response += "tt";
-                            char userBuffSize[5];
-                            sprintf(userBuffSize, "%04d", transaccionID);
-                            response += string(userBuffSize);
-
-
-                            transacciones[i] = transaccionID; // identificar la transaccion con el cliente correspondiente
-                            transaccionID++;
-
-                            response += buf;
-                            nbytes = recv(i, buf, 3 , 0);
-                            buf[nbytes] = '\0';
-                            response += buf;
-                            int tam = atoi(buf); 
-                            nbytes = recv(i, buf, tam , 0);
-                            buf[nbytes] = '\0';
-                            response+=buf;
-                            //nuevo dato o glosario a actualizar
-                            nbytes = recv(i, buf, 3 , 0);
-                            buf[nbytes] = '\0';
-                            response += buf;
-                            tam = atoi(buf); 
-                            nbytes = recv(i, buf, tam , 0);
-                            buf[nbytes] = '\0';
-                            response+=buf;
-
-                            
-                            //aca se activa el thread
-                            files[i] += response;
-
-                            //cout<<response<<endl;
-                            response = "";
-                            break;
-                        }
-
+                        //-----------------------CREATE--------------------------------    
+                            case 'c' : //TODO: case cliente -> r al server
+                            {
+                                string hashMessage;
+                                buf[nbytes] = '\0';
                         
+                                string response;
+                                response = "";
 
-                        case 't':
-                        {
-                            nbytes = recv(i, buf, 4 , 0);
-                            buf[nbytes] = '\0';
-                            int idTransaccion = atoi(buf); 
-                            int socketCliente;
+                                response += "tt";
+                                char userBuffSize[9];
+                                sprintf(userBuffSize, "%08d", transaccionID);
+                                response += string(userBuffSize);
+
+                                transacciones[transaccionID] = i; // identificar la transaccion con el cliente correspondiente
+                                transaccionID++;
+                                response += buf;
+
+                                //tamaño campo
+                                nbytes = recv(i, buf, 3 , 0);
+                                buf[nbytes] = '\0';
+                                response += buf;
+                                int tam = atoi(buf); 
+                                nbytes = recv(i, buf, tam , 0);
+                                buf[nbytes] = '\0';
+                                hashMessage+=buf;
+                                response+=buf;
+
+                                //tamaño word o glosario
+                                nbytes = recv(i, buf, 3 , 0);
+                                buf[nbytes] = '\0';
+                                response += buf;
+                                tam = atoi(buf); 
+                                nbytes = recv(i, buf, tam , 0);
+                                buf[nbytes] = '\0';
+                                response+=buf;
+                                hashMessage+=buf;                                
+                                cout<<"Mensaje: " <<response<<endl;
+                                //aca se activa el thread
+                                files[i] = response;
+
+                                //cout<<response<<endl;
+                                response = "";
+
+                                
+                                /*Definir NA con hash*/
+                                /*esto de abajo lo copio no?*/
+                                
+                                auto obj = myhash(hashMessage) % 4 + 5;
+                                //obj = 5;
+                                cout<<"Envia a socket: "<<obj<<endl;
+                                if (FD_ISSET(obj, &master)) {
+                                    
+                                    if(send(obj, files[i].c_str(),strlen(files[i].c_str()),0) == -1){
+                                        perror("send to NA");
+                                    }
+                                    
+                                }
+
+                                break;
+                            }
                         
-                            
-                            if(!(transacciones.find(idTransaccion) == transacciones.end())){
-                                auto sock = transacciones[idTransaccion];
-                                socketCliente= sock;
-                            }else{
-                                perror("bad Tid");
+                        //---------------------------END----CREATE---------------------
+                        
+                        //---------------------------------READ---------------------------
+                            case 'r' : //TODO: case cliente -> r al server
+                            {
+                                cout<<"Me mandaron un read"<<endl;
+
+                                buf[nbytes] = '\0';
+                                
+                                string response;
+                                response = "";
+ 
+                                response += "tr";
+                                char userBuffSize[9];
+                                sprintf(userBuffSize, "%08d", transaccionID);
+                                response += string(userBuffSize);
+
+                                
+                                response += buf; //r (w/g) 
+
+                                transacciones[transaccionID] = i;  //cada transaccion se le asigna el valor del ID cliente
+                                cout<<"la transaccion: "<<transaccionID<< " guardo el socketCliente: "<<i<<endl;
+                               // transacciones[i] = transaccionID; // identificar la transaccion con el cliente correspondiente
+                                //transaccionID++; esto esta al final 
+                                nbytes = recv(i, buf, 3 , 0); //Csize
+                                buf[nbytes] = '\0';
+                                response += buf;
+                                int tam = atoi(buf); 
+                                nbytes = recv(i, buf, tam , 0); //Campo
+                                buf[nbytes] = '\0';
+                                response+=buf;
+
+                                
+                                //aca se activa el thread
+                                files[i] = response;
+
+                                cout<<"Esto estoy enviando "<<response<<endl;
+                                response = "";
+
+                                for(j = 5; j < fdmax; j++) {
+                                // send to everyone
+                                    if (FD_ISSET(j, &master)) {
+                                        //except the listener and ourselves
+                                        if (j != listener && j != i) {
+                                            //cout<<"files["<<i<<"] : "<<files[i]<<endl;
+                                            if (send(j, files[i].c_str(),  strlen(files[i].c_str()), 0) == -1) {
+                                                perror("send");
+                                            }
+
+                                            transaccionNA[transaccionID].push_back(j); //se agrega a la transaccion ID que NA trabajan con el
+                                            cout<<"Envia a socket: "<<j<<endl;
+                                        }
+                                    }
+                                }
+
+                                transaccionID++;
+
+                                break;
                             }
 
+                        //-------------------END--READ---------------------------------------------
 
-                            nbytes = recv(i, buf, 5 , 0); // tamaño del vector resultante de campos o datos
-                            buf[nbytes] = '\0';
-                            int tam = atoi(buf); 
-                            nbytes = recv(i, buf, tam , 0); //los datos
-                            buf[nbytes] = '\0';
-                            response+=buf;
+                        //--------------------UPDATE-------------------------------------------------
+                            case 'u':
+                            {
+                                buf[nbytes] = '\0';
+                                
+                                string response;
+                                response = "";
+                                
+                                //response += "tt000" + to_string(transaccionID);
+                                response += "tt";
+                                char userBuffSize[9];
+                                sprintf(userBuffSize, "%08d", transaccionID);
+                                response += string(userBuffSize);
+
+
+                                transacciones[transaccionID] = i; // identificar la transaccion con el cliente correspondiente
+                                transaccionID++;
+
+                                response += buf;
+                                nbytes = recv(i, buf, 3 , 0);
+                                buf[nbytes] = '\0';
+                                response += buf;
+                                int tam = atoi(buf); 
+                                nbytes = recv(i, buf, tam , 0);
+                                buf[nbytes] = '\0';
+                                response+=buf;
+                                //nuevo dato o glosario a actualizar
+                                nbytes = recv(i, buf, 3 , 0);
+                                buf[nbytes] = '\0';
+                                response += buf;
+                                tam = atoi(buf); 
+                                nbytes = recv(i, buf, tam , 0);
+                                buf[nbytes] = '\0';
+                                response+=buf;
+
+                                
+                                //aca se activa el thread
+                                files[i] = response;
+
+                                //cout<<response<<endl;
+                                response = "";
+                                break;
+                            }
+
+                        //----------------------------END-UPDATE---------------------------------------
+
+                        //----------------------------DELETE-------------------------------------------               
+                            case 'd'://delete
+                            {
+
+                                cout<<"Enviaron un delete"<<endl;
+                                string hashMessage = "";
+                                buf[nbytes] = '\0';
+                                
+                                string response;
+                                response = "";
+                                
+                                //response += "tt000" + to_string(transaccionID);
+                                response += "tt";
+                                char userBuffSize[9];
+                                sprintf(userBuffSize, "%08d", transaccionID);
+                                response += string(userBuffSize);
+
+
+                                transacciones[transaccionID] = i; // identificar la transaccion con el cliente correspondiente
+                                transaccionID++;
+
+                                response += buf;
+                                nbytes = recv(i, buf, 3 , 0);
+                                buf[nbytes] = '\0';
+                                response += buf;
+                                int tam = atoi(buf); 
+
+                                nbytes = recv(i, buf, tam , 0);
+                                buf[nbytes] = '\0';
+                                hashMessage += buf;
+                                response+=buf;
+
+                                //nuevo dato o glosario a actualizar
+                                nbytes = recv(i, buf, 3 , 0);
+                                buf[nbytes] = '\0';
+                                response += buf;
+                                tam = atoi(buf); 
+
+                                nbytes = recv(i, buf, tam , 0);
+                                buf[nbytes] = '\0';
+                                                                
+                                hashMessage += buf;
+                                response+=buf;
+
+                                
+                                //aca se activa el thread
+                                files[i] = response;
+
+                                cout<<"el NP envia esto: "<< response <<endl;
+                                cout<<"el hash recibe: "<<hashMessage <<endl;
+                                //cout<<response<<endl;
+                                response = "";
+
+                                auto obj = myhash(hashMessage) % 4 + 5;
+                                //obj = 5;
+                                cout<<"Envia a socket: "<<obj<<endl;
+                                if (FD_ISSET(obj, &master)) {
+                                    
+                                    if(send(obj, files[i].c_str(),strlen(files[i].c_str()),0) == -1){
+                                        perror("send to NA");
+                                    }
+                                    
+                                }
+                                
+                                cout<<"delete enviado al NA con exito"<<endl;
+                                hashMessage = "";
+                                break;
+                            }
+
+                        //---------------------------END--DELETE-----------------------------------
+
+                        //--------------------------DEVOLUCION DEL NA--------------------------------
+                        //-----------------------CONFIRMACION PARA ENVIAR AL CLIENT---------------------
+                            case 't':
+                            {
+                                
+                                switch(buf[1]){
+                                    //saber si es un c u d
+                                    case 't':{
+                                        
+                                        string response;
+                                        cout<<"hay una repsuesta"<<endl;
+                                        nbytes = recv(i, buf, 8 , 0);
+                                        buf[nbytes] = '\0';
+                                        cout<<"["<<buf<<"]"<<endl;
+                                        int idTransaccion = atoi(buf); 
+                                        int socketCliente;
+                                    
+                                        
+                                        if(transacciones.find(idTransaccion) != transacciones.end()){
+                                            auto sock = transacciones[idTransaccion];
+                                            socketCliente= sock;
+                                        }else{
+                                            cout<<"Tid no encontrado\n";
+                                        }
+
+
+
+
+                                        nbytes = recv(i, buf, 4, 0); // tamaño del vector resultante de campos o datos
+                                        buf[nbytes] = '\0';
+                                        cout<<"["<<buf<<"]"<<endl;
+                                        //response += buf; //no es necesario son mensajes predeterminados
+                                        
+                                        int tam = atoi(buf); 
+
+                                        //en que momento agrega el tamaño??
+                                        nbytes = recv(i, buf, tam , 0); //los datos
+                                        buf[nbytes] = '\0';
+                                        cout<<"["<<buf<<"]"<<endl;
+                                        response+=buf;
+                                        
+                                        //aca se activa el thread
+                                        files[i] = response;
+
+                                        //cout<<"envia al cliente"<<endl;
+                                        send(socketCliente, files[i].c_str(),  strlen(files[i].c_str()), 0);
+                                        response = "";
+                                        cout<<response<<endl;
+                                        break;
+                                    }
+
+                                    //saber si es una respuesta del r esto esta en el switch r
+                                    case 'r':
+                                    {
+                                        string response;
+                                        response +="r";
+                                        cout<<"hay una repsuesta del read"<<endl;
+                                        nbytes = recv(i, buf, 8 , 0);
+                                        buf[nbytes] = '\0';
+                                        cout<<"["<<buf<<"]"<<endl;
+                                        int idTransaccion = atoi(buf); 
+                                        cout<<"el id Transaccion: "<<idTransaccion<<endl;
+                                        int socketCliente;
+                                        //vector<int> socketNA;
+                                    
+                                        
+                                        if(transacciones.find(idTransaccion) != transacciones.end()){
+                                            int sock = transacciones[idTransaccion];
+                                            //auto sockNA = transaccionNA[idTransaccion]; //saber en que NA estaba la info
+                                            socketCliente= sock;
+                                            //socketNA = sockNA;
+                                        }else{
+                                            cout<<"Tid no encontrado\n";
+                                        }
+
+
+
+
+                                        nbytes = recv(i, buf, 4, 0); // tamaño del vector resultante de campos o datos
+                                        buf[nbytes] = '\0';
+                                        cout<<"["<<buf<<"]"<<endl;
+                                        response += buf;
+                                        int tam = atoi(buf); 
+
+                                        nbytes = recv(i, buf, tam , 0); //los datos
+                                        buf[nbytes] = '\0';
+                                        cout<<"["<<buf<<"]"<<endl;
+                                        response+=buf;
+                                        
+                                        //agrega el NA donde estuvo la info
+                                        //response += to_string(socketNA);
+                                        //aca se activa el thread
+                                        files[i] = response;
+                                        cout<<files[i]<<endl;
+
+                                        //cout<<"envia al cliente"<<endl;
+                                        send(socketCliente, files[i].c_str(),  strlen(files[i].c_str()), 0);
+                                        response = "";
+                                        cout<<response<<endl;
+                                        break;
+                                    }
+                                }
+                                
+                            }
+
+                            //----------------END----TRANSACCION EXITOSA-----------------------
+
+                        }
+
+                        //---------END DEL SWITCH DE PROTOCOLOS-----------------------------
                             
-                            //aca se activa el thread
-                            files[i] += response;
+                        //segun el hash definir cuales son clientes y cuales NA's
+                        //int NA, puede disminuir al hacer la reutilizacion= 5 al inicio
+                        //el ultimo siempre será el cliente
 
-                            send(socketCliente, files[i].c_str(),  strlen(files[i].c_str()), 0);
-                            response = "";
-                            //cout<<response<<endl;
-                        }
-                    }
-                    
-                    
-
-
-                /* Para después
-                string hashMessage = files[i];
-                hash<string> myhash;
-                auto obj = myhash(hashMessage) % 4 + 4;
-                if(send(obj, hashMessage.c_str(),strlen(hashMessage.c_str()),0) == -1){
-                    perror("send to NA");
-                }
-                */
-                
-
-                    //segun el hash definir cual es sonnclientes y cuales NA's
-                    //int NA, puede disminuir al hacer la reutilizacion= 5 al inicio
-                    //el ultimo siempre será el cliente
-                    for(j = 5; j < fdmax; j++) {
-                        
-                    // send to everyone
-                        if (FD_ISSET(j, &master)) {
-                            //except the listener and ourselves
-                            if (j != listener && j != i) {
-                            if (send(j, files[i].c_str(),  strlen(files[i].c_str()), 0) == -1) {
-                            perror("send");
+                        /*for(j = 5; j < fdmax; j++) {
+                            
+                        // send to everyone
+                            if (FD_ISSET(j, &master)) {
+                                //except the listener and ourselves
+                                if (j != listener && j != i) {
+                                    //cout<<"files["<<i<<"] : "<<files[i]<<endl;
+                                    if (send(j, files[i].c_str(),  strlen(files[i].c_str()), 0) == -1) {
+                                        perror("send");
+                                    }
+                                    cout<<"Envia a socket: "<<j<<endl;
+                                }
                             }
-                            cout<<"Envia a socket: "<<j<<endl;
-                            }
-                        }
-                        close(j);
-                        FD_CLR(j,&master);
+                            //close(j);
+                            //FD_CLR(j,&master);
+                        }*/
+
                     }
-                
-                }
-            } // END handle data from client
-            cout<<"No se cierra\n";
+                } // END handle data from client
+            
             } // END got new incoming connection
-            cout<<"No se cierra\n";
+
             
         } // END looping through file descriptors
 	} // END for(;;)--and you thought it would never end!
@@ -462,6 +634,10 @@ int main() {
 
     return 0;
 }
+
+
+
+*/
 
 
 
