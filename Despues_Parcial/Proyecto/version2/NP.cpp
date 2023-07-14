@@ -213,7 +213,7 @@ int main(void){
             }else {
 
             // handle data from a client
-                // el protocolo cc rc rd uu dd
+                // el protocolo c r d u d (w/g)
                 if ((nbytes = recv(i, buf, 2 , 0)) <= 0) {
                     // got error or connection closed by client
                     if (nbytes == 0) {
@@ -258,6 +258,7 @@ int main(void){
                             buf[nbytes] = '\0';
                             response+=buf;
                             
+                            cout<<"Mensaje: " <<response<<endl;
                             //aca se activa el thread
                             files[i] += response;
 
@@ -352,6 +353,7 @@ int main(void){
                                 perror("bad Tid");
                             }
 
+
                             nbytes = recv(i, buf, 5 , 0); // tamaño del vector resultante de campos o datos
                             buf[nbytes] = '\0';
                             int tam = atoi(buf); 
@@ -384,6 +386,7 @@ int main(void){
                     //segun el hash definir cual es sonnclientes y cuales NA's
                     //int NA, puede disminuir al hacer la reutilizacion= 5 al inicio
                     for(j = 0; j <= fdmax; j++) {
+                        
                     // send to everyone
                         if (FD_ISSET(j, &master)) {
                             //except the listener and ourselves
@@ -391,6 +394,7 @@ int main(void){
                             if (send(j, files[i].c_str(),  strlen(files[i].c_str()), 0) == -1) {
                             perror("send");
                             }
+                            cout<<"Envia a socket: "<<j<<endl;
                             }
                         }
                     }
